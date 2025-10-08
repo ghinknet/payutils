@@ -57,7 +57,7 @@ func (g *GinController) Create(c *gin.Context) {
 	fmt.Println(bm)
 
 	// Create order
-	// TODO: Seperate Page Pay and Wap Pay
+	// TODO: Separate Page Pay and Wap Pay
 	url, err := g.Client.Alipay.TradePagePay(context.Background(), bm)
 	if err != nil {
 		g.Config.ErrorHandler(c, err)

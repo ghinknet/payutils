@@ -7,6 +7,7 @@ import (
 
 type GinController struct {
 	Client *model.Client
+	Config model.Config
 }
 
 func (g *GinController) Create(c *gin.Context) {

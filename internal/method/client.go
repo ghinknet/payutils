@@ -46,19 +46,22 @@ func CreateClient(config model.Config) (*model.Client, error) {
 		client.Alipay.DebugSwitch = debugOption
 	}
 
-	if config.Wechat != nil {
+	if config.WeChatPay != nil {
 		// Create wechat-pay client
 		client.Wechat, err = wechat.NewClientV3(
-			config.Wechat.MerchantID,
-			config.Wechat.MerchantCertSerialNumber,
-			config.Wechat.MerchantAPIv3Key,
-			config.Wechat.MerchantPrivateKey,
+			config.WeChatPay.MerchantID,
+			config.WeChatPay.MerchantCertSerialNumber,
+			config.WeChatPay.MerchantAPIv3Key,
+			config.WeChatPay.MerchantPrivateKey,
 		)
 		if err != nil {
 			return nil, err
 		}
-		// Auto verify sign by platform cert
-		err = client.Wechat.AutoVerifySign()
+		// Auto verify sign by public key
+		err = client.Wechat.AutoVerifySignByPublicKey(
+			[]byte(config.WeChatPay.PublicKey),
+			config.WeChatPay.PublicKeyID,
+		)
 		if err != nil {
 			return nil, err
 		}

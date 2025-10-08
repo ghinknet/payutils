@@ -11,18 +11,20 @@ type AlipayConfig struct {
 	IsProd            bool
 }
 
-type WechatConfig struct {
+type WeChatPayConfig struct {
 	AppID                    string
 	AppSecret                string
 	MerchantID               string
 	MerchantAPIv3Key         string
 	MerchantCertSerialNumber string
 	MerchantPrivateKey       string
+	PublicKey                string
+	PublicKeyID              string
 }
 
 type Config struct {
 	Alipay       *AlipayConfig
-	Wechat       *WechatConfig
+	WeChatPay    *WeChatPayConfig
 	Gin          *gin.RouterGroup
 	Debug        bool
 	ErrorHandler func(c *gin.Context, err error)

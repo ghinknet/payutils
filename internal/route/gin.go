@@ -17,7 +17,7 @@ func GinRegister(r *gin.RouterGroup, client *model.Client, config model.Config) 
 	}
 	{
 		wechatRoute := r.Group("/wechat")
-		wechatGinController := wechat.GinController{Client: client}
+		wechatGinController := wechat.GinController{Client: client, Config: config}
 		wechatRoute.POST("/create", wechatGinController.Create)
 		wechatRoute.POST("/callback", wechatGinController.Callback)
 		wechatRoute.POST("/openIDCallback", wechatGinController.OpenIDCallback)

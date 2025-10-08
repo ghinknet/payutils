@@ -6,7 +6,7 @@ import (
 )
 
 type AlipayConfig = model.AlipayConfig
-type WechatConfig = model.WechatConfig
+type WeChatPayConfig = model.WeChatPayConfig
 type Config = model.Config
 
 type TradeStatus = model.TradeStatus
