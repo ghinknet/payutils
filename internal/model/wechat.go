@@ -4,25 +4,20 @@ package model
 type WechatTradeState string
 
 const (
-	WechatTradeStateSuccess  WechatTradeState = "SUCCESS"    // 支付成功
-	WechatTradeStateRefund   WechatTradeState = "REFUND"     // 转入退款
-	WechatTradeStateNotPay   WechatTradeState = "NOTPAY"     // 未支付
-	WechatTradeStateClosed   WechatTradeState = "CLOSED"     // 已关闭
-	WechatTradeStateRevoked  WechatTradeState = "REVOKED"    // 已撤销（仅付款码支付会返回）
-	WechatTradeStatePaying   WechatTradeState = "USERPAYING" // 用户支付中（仅付款码支付会返回）
-	WechatTradeStatePayError WechatTradeState = "PAYERROR"   // 支付失败（仅付款码支付会返回）
+	WechatTradeStateSuccess WechatTradeState = "SUCCESS" // Pay success
+	WechatTradeStateRefund  WechatTradeState = "REFUND"  // Pay refund
+	WechatTradeStateNotPay  WechatTradeState = "NOTPAY"  // Unpay
+	WechatTradeStateClosed  WechatTradeState = "CLOSED"  // Closed
 )
 
 // WechatTradeType provides enum type for WeChat trade type const
 type WechatTradeType string
 
 const (
-	WechatTradeTypeApp      WechatTradeType = "APP"      // APP支付
-	WechatTradeTypeJSAPI    WechatTradeType = "JSAPI"    // JSAPI支付
-	WechatTradeTypeNative   WechatTradeType = "NATIVE"   // Native支付
-	WechatTradeTypeH5       WechatTradeType = "MWEB"     // H5支付
-	WechatTradeTypeMicropay WechatTradeType = "MICROPAY" // 付款码支付
-	WechatTradeTypeFacepay  WechatTradeType = "FACEPAY"  // 刷脸支付
+	WechatTradeTypeApp    WechatTradeType = "APP"    // APP pay
+	WechatTradeTypeJSAPI  WechatTradeType = "JSAPI"  // JSAPI pay
+	WechatTradeTypeNative WechatTradeType = "NATIVE" // Native pay
+	WechatTradeTypeH5     WechatTradeType = "MWEB"   // H5 pay
 )
 
 type WechatPayCallback struct {

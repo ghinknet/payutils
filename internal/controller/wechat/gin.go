@@ -68,6 +68,8 @@ func (g *GinController) Create(c *gin.Context) {
 			"payUrl": wxRsp.Response.CodeUrl,
 		})
 	case model.PlatformMobile:
+		fallthrough
+	case model.PlatformWeChat:
 
 	}
 }

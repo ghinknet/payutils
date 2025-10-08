@@ -52,19 +52,27 @@ func (g *GinController) Create(c *gin.Context) {
 	bm := make(gopay.BodyMap)
 	bm.Set("subject", orderInfo.Subject).
 		Set("out_trade_no", req.OrderID).
-		Set("total_amount", centsToYuan(orderInfo.Price))
+		Set("total_amount", centsToYuan(orderInfo.Price)).
+		Set("notify_url", fmt.Sprintf(
+			"%s%s/alipay/callback", g.Config.Endpoint, g.Config.Gin.BasePath(),
+		))
 
 	// Create order
-	// TODO: Separate Page Pay and Wap Pay
-	url, err := g.Client.Alipay.TradePagePay(context.Background(), bm)
-	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+	switch req.Platform {
+	case model.PlatformPC:
+		url, err := g.Client.Alipay.TradePagePay(context.Background(), bm)
+		if err != nil {
+			g.Config.ErrorHandler(c, err)
+			return
+		}
+		model.RespSuccess(c, map[string]string{
+			"payUrl": url,
+		})
+	case model.PlatformWeChat:
+		fallthrough
+	case model.PlatformMobile:
+		// TODO: Waiting for go-pay merge my PR
 	}
-
-	model.RespSuccess(c, map[string]string{
-		"payUrl": url,
-	})
 }
 
 func (g *GinController) Callback(c *gin.Context) {
