@@ -68,7 +68,7 @@ func CreateClient(config model.Config) (*model.Client, error) {
 
 	// Register gin route
 	if config.Gin != nil {
-		route.GinRegister(config.Gin, client)
+		route.GinRegister(config.Gin, client, config)
 	}
 
 	return client, nil

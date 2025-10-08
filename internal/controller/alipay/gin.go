@@ -1,17 +1,121 @@
 package alipay
 
 import (
+	"context"
+	"fmt"
 	"git.ghink.net/ghink/payutils/internal/model"
 	"github.com/gin-gonic/gin"
+	"github.com/go-pay/gopay"
+	"github.com/go-pay/gopay/alipay"
+	"net/http"
 )
 
 type GinController struct {
 	Client *model.Client
+	Config model.Config
+}
+
+// centsToYuan transfer cents to yuan
+func centsToYuan(cents int64) string {
+	yuan := cents / 100
+	remainder := cents % 100
+
+	if cents < 0 {
+		yuan = -yuan
+		remainder = -remainder
+		return fmt.Sprintf("-%d.%02d", yuan, remainder)
+	}
+
+	return fmt.Sprintf("%d.%02d", yuan, remainder)
 }
 
 func (g *GinController) Create(c *gin.Context) {
+	// Read request params
+	var req model.OrderRequest
+	err := c.ShouldBind(&req)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
+
+	// Get order
+	orderInfo, err := g.Config.OrderInfo(
+		req.OrderID,
+		c.Request.Header.Get("Authorization"),
+	)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
+
+	// Prepare params
+	bm := make(gopay.BodyMap)
+	bm.Set("subject", orderInfo.Subject).
+		Set("out_trade_no", req.OrderID).
+		Set("total_amount", centsToYuan(orderInfo.Price))
+
+	fmt.Println(bm)
+
+	// Create order
+	// TODO: Seperate Page Pay and Wap Pay
+	url, err := g.Client.Alipay.TradePagePay(context.Background(), bm)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
+
+	model.RespSuccess(c, map[string]string{
+		"payUrl": url,
+	})
 }
 
 func (g *GinController) Callback(c *gin.Context) {
+	// Parse notify params
+	notifyReq, err := alipay.ParseNotifyToBodyMap(c.Request)
+	if err != nil {
+		c.String(http.StatusOK, err.Error())
+		return
+	}
 
+	// Verify sign by alipay public cert
+	ok, err := alipay.VerifySignWithCert([]byte(g.Config.Alipay.PublicCert), notifyReq)
+	if err != nil {
+		c.String(http.StatusOK, err.Error())
+		return
+	}
+	if !ok {
+		c.String(http.StatusOK, "failed to verify")
+		return
+	}
+
+	// Parse data
+	// Docs: https://opendocs.alipay.com/open/203/105286
+	notifyRequest := &model.NotifyRequest{}
+	err = notifyReq.Unmarshal(notifyRequest)
+	if err != nil {
+		c.String(http.StatusOK, err.Error())
+		return
+	}
+	var status model.TradeStatus
+	switch notifyRequest.TradeStatus {
+	case model.AlipayTradeClosed:
+		status = model.TradeClosed
+	case model.AlipayTradeSuccess:
+		status = model.TradeSuccess
+	case model.AlipayTradeFinished:
+		status = model.TradeFinished
+	}
+
+	// Return status
+	err = g.Config.OrderStatus(
+		notifyRequest.OutTradeNo,
+		c.Request.Header.Get("Authorization"),
+		status,
+	)
+	if err != nil {
+		c.String(http.StatusOK, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "%s", "success")
 }

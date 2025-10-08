@@ -8,10 +8,10 @@ import (
 )
 
 // GinRegister registers gin router
-func GinRegister(r *gin.RouterGroup, client *model.Client) {
+func GinRegister(r *gin.RouterGroup, client *model.Client, config model.Config) {
 	{
 		alipayRoute := r.Group("/alipay")
-		alipayGinController := alipay.GinController{Client: client}
+		alipayGinController := alipay.GinController{Client: client, Config: config}
 		alipayRoute.POST("/create", alipayGinController.Create)
 		alipayRoute.POST("/callback", alipayGinController.Callback)
 	}

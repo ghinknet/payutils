@@ -21,9 +21,11 @@ type WechatConfig struct {
 }
 
 type Config struct {
-	Alipay    *AlipayConfig
-	Wechat    *WechatConfig
-	Gin       *gin.RouterGroup
-	Debug     bool
-	OrderInfo func(orderID string, authorization string) string
+	Alipay       *AlipayConfig
+	Wechat       *WechatConfig
+	Gin          *gin.RouterGroup
+	Debug        bool
+	ErrorHandler func(c *gin.Context, err error)
+	OrderInfo    func(orderID string, authorization string) (OrderInfo, error)
+	OrderStatus  func(orderID string, authorization string, status TradeStatus) error
 }

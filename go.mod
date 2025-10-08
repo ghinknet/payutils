@@ -6,7 +6,7 @@ toolchain go1.24.7
 
 require (
 	github.com/gin-gonic/gin v1.11.0
-	github.com/go-pay/gopay v1.5.114
+	github.com/go-pay/gopay v1.5.115-0.20250818144518-55ab11ec0623
 )
 
 require (
