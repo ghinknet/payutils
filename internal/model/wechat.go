@@ -72,3 +72,20 @@ type PayerInfo struct {
 type SceneInfo struct {
 	DeviceID string `json:"device_id"`
 }
+
+// AccessTokenResponse provides WeChat access token response struct
+type AccessTokenResponse struct {
+	AccessToken    string `json:"access_token"`
+	ExpiresIn      int    `json:"expires_in"`
+	RefreshToken   string `json:"refresh_token"`
+	OpenID         string `json:"openid"`
+	Scope          string `json:"scope"`
+	IsSnapshotUser int    `json:"is_snapshotuser"`
+	UnionID        string `json:"unionid"`
+}
+
+// OpenIDCallbackRequest provides basic WeChat OpenID callback requests params bind
+type OpenIDCallbackRequest struct {
+	Code  string `json:"code" binding:"required"`
+	State string `json:"state" binding:"required"`
+}

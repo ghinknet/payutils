@@ -2,11 +2,13 @@ package wechat
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"git.ghink.net/ghink/payutils/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/wechat/v3"
+	"io"
 	"net/http"
 	"time"
 )
@@ -128,7 +130,50 @@ func (g *GinController) Callback(c *gin.Context) {
 }
 
 func (g *GinController) OpenIDCallback(c *gin.Context) {
+	// Read request params
+	var req model.OpenIDCallbackRequest
+	err := c.ShouldBind(&req)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
 
+	// Request URI
+	url := fmt.Sprintf(
+		"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code",
+		g.Config.WeChatPay.AppID,
+		g.Config.WeChatPay.AppSecret,
+		req.Code,
+	)
+
+	// Send Request
+	resp, err := http.Get(url)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
+
+	// Read Body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
+
+	// Parse JSON Data
+	var result model.AccessTokenResponse
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
+
+	model.RespSuccess(c, map[string]string{
+		"openID": result.OpenID,
+	})
 }
 
 func (g *GinController) BasicInfo(c *gin.Context) {
