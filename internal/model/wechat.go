@@ -1,6 +1,6 @@
 package model
 
-// WechatTradeState provides enum type for wechat trade status const
+// WechatTradeState provides enum type for WeChat trade status const
 type WechatTradeState string
 
 const (
@@ -13,7 +13,7 @@ const (
 	WechatTradeStatePayError WechatTradeState = "PAYERROR"   // 支付失败（仅付款码支付会返回）
 )
 
-// WechatTradeType provides enum type for wechat trade type const
+// WechatTradeType provides enum type for WeChat trade type const
 type WechatTradeType string
 
 const (

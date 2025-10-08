@@ -27,6 +27,7 @@ type Config struct {
 	WeChatPay    *WeChatPayConfig
 	Gin          *gin.RouterGroup
 	Debug        bool
+	Endpoint     string
 	ErrorHandler func(c *gin.Context, err error)
 	OrderInfo    func(orderID string, authorization string) (OrderInfo, error)
 	OrderStatus  func(orderID string, authorization string, status TradeStatus) error

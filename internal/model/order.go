@@ -10,9 +10,19 @@ const (
 	TradeFinished TradeStatus = "FINISHED"
 )
 
+// Platform provides enum type for platforms
+type Platform string
+
+const (
+	PlatformPC     Platform = "PC"
+	PlatformMobile Platform = "Mobile"
+	PlatformWeChat Platform = "WeChat"
+)
+
 // OrderRequest provides basic requests params bind
 type OrderRequest struct {
-	OrderID string `json:"orderID" binding:"required"`
+	OrderID  string   `json:"orderID" binding:"required"`
+	Platform Platform `json:"platform" binding:"required"`
 }
 
 // OrderInfo provides basic order info

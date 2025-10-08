@@ -1,12 +1,14 @@
 package wechat
 
 import (
-	"net/http"
-
+	"context"
+	"fmt"
 	"git.ghink.net/ghink/payutils/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/wechat/v3"
+	"net/http"
+	"time"
 )
 
 type GinController struct {
@@ -15,7 +17,59 @@ type GinController struct {
 }
 
 func (g *GinController) Create(c *gin.Context) {
+	// Read request params
+	var req model.OrderRequest
+	err := c.ShouldBind(&req)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
 
+	// Get order
+	orderInfo, err := g.Config.OrderInfo(
+		req.OrderID,
+		c.Request.Header.Get("Authorization"),
+	)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
+
+	// Prepare params
+	expire := time.Now().Add(10 * time.Minute).Format(time.RFC3339)
+	bm := make(gopay.BodyMap)
+	bm.Set("appid", g.Config.WeChatPay.AppID).
+		Set("mchid", g.Config.WeChatPay.MerchantID).
+		Set("description", orderInfo.Subject).
+		Set("out_trade_no", req.OrderID).
+		Set("time_expire", expire).
+		Set("notify_url", fmt.Sprintf(
+			"%s%s/wechat/callback", g.Config.Endpoint, g.Config.Gin.BasePath(),
+		)).
+		SetBodyMap("amount", func(bm gopay.BodyMap) {
+			bm.Set("total", orderInfo.Price).
+				Set("currency", "CNY")
+		})
+
+	switch req.Platform {
+	case model.PlatformPC:
+		// Create native transaction
+		wxRsp, err := g.Client.Wechat.V3TransactionNative(context.Background(), bm)
+		if err != nil {
+			g.Config.ErrorHandler(c, err)
+			return
+		}
+		if wxRsp.Code != 0 {
+			g.Config.ErrorHandler(c, model.ErrWeChatPayRespCodeInvalid)
+			return
+		}
+
+		model.RespSuccess(c, map[string]string{
+			"payUrl": wxRsp.Response.CodeUrl,
+		})
+	case model.PlatformMobile:
+
+	}
 }
 
 func (g *GinController) Callback(c *gin.Context) {

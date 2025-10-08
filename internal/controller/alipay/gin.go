@@ -54,8 +54,6 @@ func (g *GinController) Create(c *gin.Context) {
 		Set("out_trade_no", req.OrderID).
 		Set("total_amount", centsToYuan(orderInfo.Price))
 
-	fmt.Println(bm)
-
 	// Create order
 	// TODO: Separate Page Pay and Wap Pay
 	url, err := g.Client.Alipay.TradePagePay(context.Background(), bm)
