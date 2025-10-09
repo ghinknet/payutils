@@ -142,7 +142,7 @@ func (g *GinController) OpenIDCallback(c *gin.Context) {
 	}
 
 	// Request URI
-	url := fmt.Sprintf(
+	URL := fmt.Sprintf(
 		"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code",
 		g.Config.WeChatPay.AppID,
 		g.Config.WeChatPay.AppSecret,
@@ -150,7 +150,7 @@ func (g *GinController) OpenIDCallback(c *gin.Context) {
 	)
 
 	// Send Request
-	resp, err := http.Get(url)
+	resp, err := http.Get(URL)
 	if err != nil {
 		g.Config.ErrorHandler(c, err)
 		return
@@ -204,5 +204,7 @@ func (g *GinController) AuthorizeLinkGen(c *gin.Context) {
 	)
 
 	// Return authorize link
-	model.RespSuccess(c, map[string]string{"url": authURL})
+	model.RespSuccess(c, map[string]string{
+		"url": authURL,
+	})
 }

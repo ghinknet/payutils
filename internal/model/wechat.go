@@ -46,7 +46,7 @@ type AmountInfo struct {
 
 type PromotionDetail struct {
 	Amount              int           `json:"amount"`
-	WechatpayContribute int           `json:"wechatpay_contribute"`
+	WeChatPayContribute int           `json:"wechatpay_contribute"`
 	CouponID            string        `json:"coupon_id"`
 	Scope               string        `json:"scope"`
 	MerchantContribute  int           `json:"merchant_contribute"`
