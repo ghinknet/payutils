@@ -2,6 +2,7 @@ package alipay
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -85,18 +86,18 @@ func (g *GinController) Callback(c *gin.Context) {
 	// Parse notify params
 	notifyReq, err := alipay.ParseNotifyToBodyMap(c.Request)
 	if err != nil {
-		c.String(http.StatusOK, err.Error())
+		g.Config.ErrorHandler(c, err)
 		return
 	}
 
 	// Verify sign by alipay public cert
 	ok, err := alipay.VerifySignWithCert([]byte(g.Config.Alipay.PublicCert), notifyReq)
 	if err != nil {
-		c.String(http.StatusOK, err.Error())
+		g.Config.ErrorHandler(c, err)
 		return
 	}
 	if !ok {
-		c.String(http.StatusOK, "failed to verify")
+		g.Config.ErrorHandler(c, errors.New("failed to verify"))
 		return
 	}
 
@@ -105,7 +106,7 @@ func (g *GinController) Callback(c *gin.Context) {
 	notifyRequest := &model.NotifyRequest{}
 	err = notifyReq.Unmarshal(notifyRequest)
 	if err != nil {
-		c.String(http.StatusOK, err.Error())
+		g.Config.ErrorHandler(c, err)
 		return
 	}
 	var status model.TradeStatus
@@ -124,7 +125,7 @@ func (g *GinController) Callback(c *gin.Context) {
 		status,
 	)
 	if err != nil {
-		c.String(http.StatusOK, err.Error())
+		g.Config.ErrorHandler(c, err)
 		return
 	}
 
