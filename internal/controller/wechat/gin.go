@@ -99,6 +99,10 @@ func (g *GinController) Create(c *gin.Context) {
 			g.Config.WeChatPay.AppID,
 			wxRsp.Response.PrepayId,
 		)
+		if err != nil {
+			g.Config.ErrorHandler(c, err)
+			return
+		}
 
 		model.RespSuccess(c, jsapi)
 	}
