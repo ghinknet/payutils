@@ -18,19 +18,19 @@ const (
 )
 
 // FundBill provides basic struct for bill
-type FundBill struct {
-	Amount      string `json:"amount"`
-	FundChannel string `json:"fundChannel"`
-}
+// type FundBill struct {
+// 	Amount      string `json:"amount"`
+// 	FundChannel string `json:"fundChannel"`
+// }
 
 // VoucherDetail provides basic struct for voucher
-type VoucherDetail struct {
-	Amount             string `json:"amount"`
-	MerchantContribute string `json:"merchantContribute"`
-	OtherContribute    string `json:"other_contribute"`
-	Type               string `json:"type"`
-	Memo               string `json:"memo"`
-}
+// type VoucherDetail struct {
+// 	Amount             string `json:"amount"`
+// 	MerchantContribute string `json:"merchantContribute"`
+// 	OtherContribute    string `json:"other_contribute"`
+// 	Type               string `json:"type"`
+// 	Memo               string `json:"memo"`
+// }
 
 // NotifyRequest provides full notify request struct
 type NotifyRequest struct {
@@ -50,19 +50,19 @@ type NotifyRequest struct {
 	SellerID          string            `json:"seller_id,omitempty"`
 	SellerEmail       string            `json:"seller_email,omitempty"`
 	TradeStatus       AlipayTradeStatus `json:"trade_status,omitempty"`
-	TotalAmount       float64           `json:"total_amount,omitempty"`
-	ReceiptAmount     float64           `json:"receipt_amount,omitempty"`
-	InvoiceAmount     float64           `json:"invoice_amount,omitempty"`
-	BuyerPayAmount    float64           `json:"buyer_pay_amount,omitempty"`
-	PointAmount       float64           `json:"point_amount,omitempty"`
-	RefundFee         float64           `json:"refund_fee,omitempty"`
+	TotalAmount       string            `json:"total_amount,omitempty"`
+	ReceiptAmount     string            `json:"receipt_amount,omitempty"`
+	InvoiceAmount     string            `json:"invoice_amount,omitempty"`
+	BuyerPayAmount    string            `json:"buyer_pay_amount,omitempty"`
+	PointAmount       string            `json:"point_amount,omitempty"`
+	RefundFee         string            `json:"refund_fee,omitempty"`
 	Subject           string            `json:"subject,omitempty"`
 	Body              string            `json:"body,omitempty"`
 	GmtCreate         string            `json:"gmt_create,omitempty"`
 	GmtPayment        string            `json:"gmt_payment,omitempty"`
 	GmtRefund         string            `json:"gmt_refund,omitempty"`
 	GmtClose          string            `json:"gmt_close,omitempty"`
-	FundBillList      []FundBill        `json:"fund_bill_list,omitempty"`
+	FundBillList      string            `json:"fund_bill_list,omitempty"`
 	PassbackParams    string            `json:"passback_params,omitempty"`
-	VoucherDetailList []VoucherDetail   `json:"voucher_detail_list,omitempty"`
+	VoucherDetailList string            `json:"voucher_detail_list,omitempty"`
 }
