@@ -9,6 +9,8 @@ type AlipayConfig = model.AlipayConfig
 type WeChatPayConfig = model.WeChatPayConfig
 type Config = model.Config
 
+type Client = model.Client
+
 type TradeStatus = model.TradeStatus
 type OrderInfo = model.OrderInfo
 
