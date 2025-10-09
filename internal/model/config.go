@@ -30,5 +30,5 @@ type Config struct {
 	Endpoint     string
 	ErrorHandler func(c *gin.Context, err error)
 	OrderInfo    func(orderID string, authorization string) (OrderInfo, error)
-	OrderStatus  func(orderID string, authorization string, status TradeStatus) error
+	OrderStatus  func(orderID string, status TradeStatus) error
 }

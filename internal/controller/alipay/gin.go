@@ -3,11 +3,12 @@ package alipay
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"git.ghink.net/ghink/payutils/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay"
-	"net/http"
 )
 
 type GinController struct {
@@ -115,7 +116,6 @@ func (g *GinController) Callback(c *gin.Context) {
 	// Return status
 	err = g.Config.OrderStatus(
 		notifyRequest.OutTradeNo,
-		c.Request.Header.Get("Authorization"),
 		status,
 	)
 	if err != nil {

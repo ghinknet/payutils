@@ -117,7 +117,6 @@ func (g *GinController) Callback(c *gin.Context) {
 	// Return status
 	err = g.Config.OrderStatus(
 		wechatPayCallback.OutTradeNo,
-		c.Request.Header.Get("Authorization"),
 		status,
 	)
 	if err != nil {
