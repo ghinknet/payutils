@@ -58,8 +58,8 @@ func (g *GinController) Create(c *gin.Context) {
 
 	switch req.Platform {
 	case model.PlatformPC:
-		// Create native transaction
-		wxRsp, err := g.Client.Wechat.V3TransactionNative(context.Background(), bm)
+		// Create a native transaction
+		wxRsp, err := g.Client.WeChat.V3TransactionNative(context.Background(), bm)
 		if err != nil {
 			g.Config.ErrorHandler(c, err)
 			return
@@ -75,7 +75,32 @@ func (g *GinController) Create(c *gin.Context) {
 	case model.PlatformMobile:
 		fallthrough
 	case model.PlatformWeChat:
+		if req.OrderID == "" {
+			g.Config.ErrorHandler(c, model.ErrOrderIDIsRequired)
+			return
+		}
+		bm.SetBodyMap("payer", func(bm gopay.BodyMap) {
+			bm.Set("openid", req.OrderID)
+		})
 
+		// Create a jsapi transaction
+		wxRsp, err := g.Client.WeChat.V3TransactionJsapi(context.Background(), bm)
+		if err != nil {
+			g.Config.ErrorHandler(c, err)
+			return
+		}
+		if wxRsp.Code != 0 {
+			g.Config.ErrorHandler(c, model.ErrWeChatPayRespCodeInvalid)
+			return
+		}
+
+		// Get jsapi sign
+		jsapi, err := g.Client.WeChat.PaySignOfJSAPI(
+			g.Config.WeChatPay.AppID,
+			wxRsp.Response.PrepayId,
+		)
+
+		model.RespSuccess(c, jsapi)
 	}
 }
 
@@ -87,7 +112,7 @@ func (g *GinController) Callback(c *gin.Context) {
 
 	//TODO:这玩意到底能不能跑？
 	// 获取微信平台证书
-	certMap := g.Client.Wechat.WxPublicKeyMap()
+	certMap := g.Client.WeChat.WxPublicKeyMap()
 	// 验证异步通知的签名
 	err = notifyReq.VerifySignByPKMap(certMap)
 	if err != nil {
@@ -95,7 +120,7 @@ func (g *GinController) Callback(c *gin.Context) {
 	}
 
 	// 微信消息解密
-	wechatPayCallback := &model.WechatPayCallback{}
+	wechatPayCallback := &model.WeChatPayCallback{}
 	err = notifyReq.DecryptCipherTextToStruct(
 		g.Config.WeChatPay.MerchantAPIv3Key, *wechatPayCallback)
 	if err != nil {
@@ -105,13 +130,13 @@ func (g *GinController) Callback(c *gin.Context) {
 	//TODO:这四个状态是不是要修改model
 	var status model.TradeStatus
 	switch wechatPayCallback.TradeState {
-	case model.WechatTradeStateSuccess:
+	case model.WeChatTradeStateSuccess:
 		status = model.TradeSuccess
-	case model.WechatTradeStateClosed:
+	case model.WeChatTradeStateClosed:
 		status = model.TradeClosed
-	case model.WechatTradeStateNotPay:
+	case model.WeChatTradeStateNotPay:
 		status = model.TradePending
-	case model.WechatTradeStateRefund:
+	case model.WeChatTradeStateRefund:
 		status = model.TradeClosed
 	}
 	// Return status

@@ -12,4 +12,8 @@ type Config = model.Config
 type TradeStatus = model.TradeStatus
 type OrderInfo = model.OrderInfo
 
+var ErrWeChatPayRespCodeInvalid = model.ErrWeChatPayRespCodeInvalid
+var ErrWeChatRedirectURIMismatch = model.ErrWeChatRedirectURIMismatch
+var ErrOrderIDIsRequired = model.ErrOrderIDIsRequired
+
 var CreateClient = method.CreateClient

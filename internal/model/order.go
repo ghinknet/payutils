@@ -23,6 +23,7 @@ const (
 type OrderRequest struct {
 	OrderID  string   `json:"orderID" binding:"required"`
 	Platform Platform `json:"platform" binding:"required"`
+	OpenID   string   `json:"openID"`
 }
 
 // OrderInfo provides basic order info

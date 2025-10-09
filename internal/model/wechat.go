@@ -1,30 +1,30 @@
 package model
 
-// WechatTradeState provides enum type for WeChat trade status const
-type WechatTradeState string
+// WeChatTradeState provides enum type for WeChat trade status const
+type WeChatTradeState string
 
 const (
-	WechatTradeStateSuccess WechatTradeState = "SUCCESS" // Pay success
-	WechatTradeStateRefund  WechatTradeState = "REFUND"  // Pay refund
-	WechatTradeStateNotPay  WechatTradeState = "NOTPAY"  // Unpay
-	WechatTradeStateClosed  WechatTradeState = "CLOSED"  // Closed
+	WeChatTradeStateSuccess WeChatTradeState = "SUCCESS" // Pay success
+	WeChatTradeStateRefund  WeChatTradeState = "REFUND"  // Pay refund
+	WeChatTradeStateNotPay  WeChatTradeState = "NOTPAY"  // Unpay
+	WeChatTradeStateClosed  WeChatTradeState = "CLOSED"  // Closed
 )
 
-// WechatTradeType provides enum type for WeChat trade type const
-type WechatTradeType string
+// WeChatTradeType provides enum type for WeChat trade type const
+type WeChatTradeType string
 
 const (
-	WechatTradeTypeApp    WechatTradeType = "APP"    // APP pay
-	WechatTradeTypeJSAPI  WechatTradeType = "JSAPI"  // JSAPI pay
-	WechatTradeTypeNative WechatTradeType = "NATIVE" // Native pay
-	WechatTradeTypeH5     WechatTradeType = "MWEB"   // H5 pay
+	WeChatTradeTypeApp    WeChatTradeType = "APP"    // APP pay
+	WeChatTradeTypeJSAPI  WeChatTradeType = "JSAPI"  // JSAPI pay
+	WeChatTradeTypeNative WeChatTradeType = "NATIVE" // Native pay
+	WeChatTradeTypeH5     WeChatTradeType = "MWEB"   // H5 pay
 )
 
-type WechatPayCallback struct {
+type WeChatPayCallback struct {
 	TransactionID   string            `json:"transaction_id"`
 	Amount          AmountInfo        `json:"amount"`
 	MchID           string            `json:"mchid"`
-	TradeState      WechatTradeState  `json:"trade_state"`
+	TradeState      WeChatTradeState  `json:"trade_state"`
 	BankType        string            `json:"bank_type"`
 	PromotionDetail []PromotionDetail `json:"promotion_detail,omitempty"`
 	SuccessTime     string            `json:"success_time"`
@@ -32,7 +32,7 @@ type WechatPayCallback struct {
 	OutTradeNo      string            `json:"out_trade_no"`
 	AppID           string            `json:"appid"`
 	TradeStateDesc  string            `json:"trade_state_desc"`
-	TradeType       WechatTradeType   `json:"trade_type"`
+	TradeType       WeChatTradeType   `json:"trade_type"`
 	Attach          string            `json:"attach,omitempty"`
 	SceneInfo       SceneInfo         `json:"scene_info,omitempty"`
 }

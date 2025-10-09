@@ -7,5 +7,5 @@ import (
 
 type Client struct {
 	Alipay *alipay.ClientV3
-	Wechat *wechat.ClientV3
+	WeChat *wechat.ClientV3
 }

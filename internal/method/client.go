@@ -48,7 +48,7 @@ func CreateClient(config model.Config) (*model.Client, error) {
 
 	if config.WeChatPay != nil {
 		// Create wechat-pay client
-		client.Wechat, err = wechat.NewClientV3(
+		client.WeChat, err = wechat.NewClientV3(
 			config.WeChatPay.MerchantID,
 			config.WeChatPay.MerchantCertSerialNumber,
 			config.WeChatPay.MerchantAPIv3Key,
@@ -58,7 +58,7 @@ func CreateClient(config model.Config) (*model.Client, error) {
 			return nil, err
 		}
 		// Auto verify sign by public key
-		err = client.Wechat.AutoVerifySignByPublicKey(
+		err = client.WeChat.AutoVerifySignByPublicKey(
 			[]byte(config.WeChatPay.PublicKey),
 			config.WeChatPay.PublicKeyID,
 		)
@@ -66,7 +66,7 @@ func CreateClient(config model.Config) (*model.Client, error) {
 			return nil, err
 		}
 		// Debug switch
-		client.Wechat.DebugSwitch = debugOption
+		client.WeChat.DebugSwitch = debugOption
 	}
 
 	// Register gin route
