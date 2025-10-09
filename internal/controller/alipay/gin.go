@@ -59,21 +59,26 @@ func (g *GinController) Create(c *gin.Context) {
 		))
 
 	// Create order
+	var url string
 	switch req.Platform {
 	case model.PlatformPC:
-		url, err := g.Client.Alipay.TradePagePay(context.Background(), bm)
+		url, err = g.Client.Alipay.TradePagePay(context.Background(), bm)
 		if err != nil {
 			g.Config.ErrorHandler(c, err)
 			return
 		}
-		model.RespSuccess(c, map[string]string{
-			"payUrl": url,
-		})
 	case model.PlatformWeChat:
 		fallthrough
 	case model.PlatformMobile:
-		// TODO: Waiting for go-pay merge my PR
+		url, err = g.Client.Alipay.TradeWapPay(context.Background(), bm)
+		if err != nil {
+			g.Config.ErrorHandler(c, err)
+			return
+		}
 	}
+	model.RespSuccess(c, map[string]string{
+		"payUrl": url,
+	})
 }
 
 func (g *GinController) Callback(c *gin.Context) {

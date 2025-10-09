@@ -9,6 +9,8 @@ require (
 	github.com/go-pay/gopay v1.5.115-0.20250818144518-55ab11ec0623
 )
 
+replace github.com/go-pay/gopay v1.5.115-0.20250818144518-55ab11ec0623 => github.com/bigsk05/gopay v0.0.0-20251008131825-61ba13a670bb
+
 require (
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.14.1 // indirect

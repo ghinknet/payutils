@@ -115,16 +115,16 @@ func (g *GinController) Callback(c *gin.Context) {
 		return
 	}
 
-	// 获取微信平台证书
+	// Get public key
 	certMap := g.Client.WeChat.WxPublicKeyMap()
-	// 验证异步通知的签名
+	// Verify sign
 	err = notifyReq.VerifySignByPKMap(certMap)
 	if err != nil {
 		g.Config.ErrorHandler(c, err)
 		return
 	}
 
-	// 微信消息解密
+	// Decrypt message from WeChat Pay
 	wechatPayCallback := &model.WeChatPayCallback{}
 	err = notifyReq.DecryptCipherTextToStruct(
 		g.Config.WeChatPay.MerchantAPIv3Key, wechatPayCallback)
@@ -133,7 +133,6 @@ func (g *GinController) Callback(c *gin.Context) {
 		return
 	}
 
-	//TODO:这四个状态是不是要修改model
 	var status model.TradeStatus
 	switch wechatPayCallback.TradeState {
 	case model.WeChatTradeStateSuccess:
@@ -155,11 +154,6 @@ func (g *GinController) Callback(c *gin.Context) {
 		return
 	}
 
-	// ====↓↓↓====异步通知应答====↓↓↓====
-	// 退款通知http应答码为200且返回状态码为SUCCESS才会当做商户接收成功，否则会重试。
-	// 注意：重试过多会导致微信支付端积压过多通知而堵塞，影响其他正常通知。
-
-	// 此写法是 gin 框架返回微信的写法
 	c.JSON(http.StatusOK, &wechat.V3NotifyRsp{Code: gopay.SUCCESS, Message: "成功"})
 }
 
