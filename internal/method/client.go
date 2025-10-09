@@ -23,6 +23,21 @@ func CreateClient(config model.Config) (*model.Client, error) {
 		debugOption = gopay.DebugOff
 	}
 
+	// Check endpoint
+	if config.Endpoint == "" {
+		return nil, model.ErrMissEndpoint
+	}
+
+	// Check order handler
+	if config.OrderInfo == nil || config.OrderStatus == nil {
+		return nil, model.ErrMissOrderHandler
+	}
+
+	// Check error handler
+	if config.ErrorHandler == nil {
+		config.ErrorHandler = model.RespInternalServerError
+	}
+
 	if config.Alipay != nil {
 		// Create alipay client
 		client.Alipay, err = alipay.NewClientV3(

@@ -14,6 +14,8 @@ type Client = model.Client
 type TradeStatus = model.TradeStatus
 type OrderInfo = model.OrderInfo
 
+var ErrMissEndpoint = model.ErrMissEndpoint
+var ErrMissOrderHandler = model.ErrMissOrderHandler
 var ErrWeChatPayRespCodeInvalid = model.ErrWeChatPayRespCodeInvalid
 var ErrWeChatRedirectURIMismatch = model.ErrWeChatRedirectURIMismatch
 var ErrOpenIDIsRequired = model.ErrOpenIDIsRequired

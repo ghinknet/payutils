@@ -18,3 +18,9 @@ func Resp(ctx *gin.Context, code int, data any, msg string) {
 func RespSuccess(c *gin.Context, data any) {
 	Resp(c, http.StatusOK, data, "success")
 }
+
+func RespInternalServerError(c *gin.Context, err error) {
+	Resp(c, http.StatusInternalServerError, map[string]any{
+		"error": err,
+	}, "internal server error")
+}
