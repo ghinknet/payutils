@@ -14,6 +14,6 @@ type OrderInfo = model.OrderInfo
 
 var ErrWeChatPayRespCodeInvalid = model.ErrWeChatPayRespCodeInvalid
 var ErrWeChatRedirectURIMismatch = model.ErrWeChatRedirectURIMismatch
-var ErrOrderIDIsRequired = model.ErrOrderIDIsRequired
+var ErrOpenIDIsRequired = model.ErrOpenIDIsRequired
 
 var CreateClient = method.CreateClient

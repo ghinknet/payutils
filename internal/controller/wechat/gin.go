@@ -75,12 +75,12 @@ func (g *GinController) Create(c *gin.Context) {
 	case model.PlatformMobile:
 		fallthrough
 	case model.PlatformWeChat:
-		if req.OrderID == "" {
-			g.Config.ErrorHandler(c, model.ErrOrderIDIsRequired)
+		if req.OpenID == "" {
+			g.Config.ErrorHandler(c, model.ErrOpenIDIsRequired)
 			return
 		}
 		bm.SetBodyMap("payer", func(bm gopay.BodyMap) {
-			bm.Set("openid", req.OrderID)
+			bm.Set("openid", req.OpenID)
 		})
 
 		// Create a jsapi transaction
