@@ -111,23 +111,25 @@ func (g *GinController) Create(c *gin.Context) {
 func (g *GinController) Callback(c *gin.Context) {
 	notifyReq, err := wechat.V3ParseNotify(c.Request)
 	if err != nil {
+		g.Config.ErrorHandler(c, err)
 		return
 	}
 
-	//TODO:这玩意到底能不能跑？
 	// 获取微信平台证书
 	certMap := g.Client.WeChat.WxPublicKeyMap()
 	// 验证异步通知的签名
 	err = notifyReq.VerifySignByPKMap(certMap)
 	if err != nil {
+		g.Config.ErrorHandler(c, err)
 		return
 	}
 
 	// 微信消息解密
 	wechatPayCallback := &model.WeChatPayCallback{}
 	err = notifyReq.DecryptCipherTextToStruct(
-		g.Config.WeChatPay.MerchantAPIv3Key, *wechatPayCallback)
+		g.Config.WeChatPay.MerchantAPIv3Key, wechatPayCallback)
 	if err != nil {
+		g.Config.ErrorHandler(c, err)
 		return
 	}
 
@@ -149,6 +151,7 @@ func (g *GinController) Callback(c *gin.Context) {
 		status,
 	)
 	if err != nil {
+		g.Config.ErrorHandler(c, err)
 		return
 	}
 
