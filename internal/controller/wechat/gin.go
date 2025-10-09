@@ -4,13 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
 	"git.ghink.net/ghink/payutils/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/wechat/v3"
-	"io"
-	"net/http"
-	"time"
 )
 
 type GinController struct {
@@ -176,6 +179,30 @@ func (g *GinController) OpenIDCallback(c *gin.Context) {
 	})
 }
 
-func (g *GinController) BasicInfo(c *gin.Context) {
+func (g *GinController) AuthorizeLinkGen(c *gin.Context) {
+	// Read request params
+	var req model.AuthorizeLinkRequest
+	err := c.ShouldBind(&req)
+	if err != nil {
+		g.Config.ErrorHandler(c, err)
+		return
+	}
 
+	// Check same-site origin(?)
+	if !strings.HasPrefix(req.RedirectURI, g.Config.Endpoint) {
+		g.Config.ErrorHandler(c, model.ErrWeChatRedirectURIMismatch)
+	}
+
+	// Encode redirect_uri
+	req.RedirectURI = url.QueryEscape(req.RedirectURI)
+
+	authURL := fmt.Sprintf(
+		"https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect",
+		g.Config.WeChatPay.AppID,
+		req.RedirectURI,
+		req.State,
+	)
+
+	// Return authorize link
+	model.RespSuccess(c, map[string]string{"url": authURL})
 }

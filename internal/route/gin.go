@@ -21,6 +21,6 @@ func GinRegister(r *gin.RouterGroup, client *model.Client, config model.Config) 
 		wechatRoute.POST("/create", wechatGinController.Create)
 		wechatRoute.POST("/callback", wechatGinController.Callback)
 		wechatRoute.POST("/openIDCallback", wechatGinController.OpenIDCallback)
-		wechatRoute.POST("/basicInfo", wechatGinController.BasicInfo)
+		wechatRoute.POST("/authorizeLink", wechatGinController.AuthorizeLinkGen)
 	}
 }
