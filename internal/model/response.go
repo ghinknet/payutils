@@ -12,7 +12,7 @@ func Resp(ctx *gin.Context, code int, data any, msg string) {
 		Msg  string `json:"msg"`
 	}
 
-	ctx.JSON(http.StatusOK, response{code, data, msg})
+	ctx.PureJSON(http.StatusOK, response{code, data, msg})
 }
 
 func RespSuccess(c *gin.Context, data any) {
