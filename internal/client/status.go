@@ -21,7 +21,7 @@ func (c *Client) CheckStatus(orderID string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if wxRsp.Code != 0 {
+	if wxRsp.Code != 0 && wxRsp.Code != 404 {
 		return false, model.ErrWeChatPayRespCodeInvalid
 	}
 	if wxRsp.Response.TradeState == "SUCCESS" {
