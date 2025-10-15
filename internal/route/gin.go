@@ -1,6 +1,7 @@
 package route
 
 import (
+	"git.ghink.net/ghink/payutils/internal/client"
 	"git.ghink.net/ghink/payutils/internal/controller/alipay"
 	"git.ghink.net/ghink/payutils/internal/controller/wechat"
 	"git.ghink.net/ghink/payutils/internal/model"
@@ -8,7 +9,7 @@ import (
 )
 
 // GinRegister registers gin router
-func GinRegister(r *gin.RouterGroup, client *model.Client, config model.Config) {
+func GinRegister(r *gin.RouterGroup, client *client.Client, config model.Config) {
 	{
 		alipayRoute := r.Group("/alipay")
 		alipayGinController := alipay.GinController{Client: client, Config: config}

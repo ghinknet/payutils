@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"git.ghink.net/ghink/payutils/internal/client"
 	"io"
 	"net/http"
 	"net/url"
@@ -17,7 +18,7 @@ import (
 )
 
 type GinController struct {
-	Client *model.Client
+	Client *client.Client
 	Config model.Config
 }
 
