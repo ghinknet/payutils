@@ -21,6 +21,7 @@ type OrderInfo = model.OrderInfo
 var ErrMissEndpoint = model.ErrMissEndpoint
 var ErrMissOrderHandler = model.ErrMissOrderHandler
 var ErrWeChatPayRespCodeInvalid = model.ErrWeChatPayRespCodeInvalid
+var ErrAlipayRespCodeInvalid = model.ErrAlipayRespCodeInvalid
 var ErrWeChatRedirectURIMismatch = model.ErrWeChatRedirectURIMismatch
 var ErrOpenIDIsRequired = model.ErrOpenIDIsRequired
 

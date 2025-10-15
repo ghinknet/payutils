@@ -37,8 +37,8 @@ func (c *Client) CheckStatus(orderID string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if aliRsp.StatusCode != http.StatusOK {
-		return false, model.ErrWeChatPayRespCodeInvalid
+	if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
+		return false, model.ErrAlipayRespCodeInvalid
 	}
 	if aliRsp.TradeStatus == "TRADE_SUCCESS" {
 		return true, nil
