@@ -16,6 +16,14 @@ type Config = model.Config
 type Client = client.Client
 
 type TradeStatus = model.TradeStatus
+
+const (
+	TradePending  TradeStatus = model.TradePending
+	TradeSuccess  TradeStatus = model.TradeSuccess
+	TradeClosed   TradeStatus = model.TradeClosed
+	TradeFinished TradeStatus = model.TradeFinished
+)
+
 type OrderInfo = model.OrderInfo
 
 var ErrMissEndpoint = model.ErrMissEndpoint
