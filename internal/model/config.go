@@ -1,6 +1,9 @@
 package model
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v3"
+)
 
 type AlipayConfig struct {
 	AppID             string
@@ -26,9 +29,10 @@ type Config struct {
 	Alipay       *AlipayConfig
 	WeChatPay    *WeChatPayConfig
 	Gin          *gin.RouterGroup
+	Fiber        fiber.Router
 	Debug        bool
 	Endpoint     string
-	ErrorHandler func(c *gin.Context, err error)
+	ErrorHandler func(c any, err error) error
 	OrderInfo    func(orderID string, authorization string) (OrderInfo, error)
 	OrderStatus  func(orderID string, status TradeStatus) error
 }

@@ -10,48 +10,45 @@ import (
 	"time"
 
 	"git.ghink.net/ghink/payutils/internal/client"
-	"github.com/bytedance/sonic"
-
 	"git.ghink.net/ghink/payutils/internal/model"
-	"github.com/gin-gonic/gin"
+	"github.com/bytedance/sonic"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/wechat/v3"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/adaptor"
 )
 
-type GinController struct {
+type FiberController struct {
 	Client *client.Client
 	Config model.Config
 }
 
-func (g *GinController) Create(c *gin.Context) {
+func (f *FiberController) Create(c fiber.Ctx) error {
 	// Read request params
 	var req model.OrderRequest
-	err := c.ShouldBind(&req)
-	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+	if err := c.Bind().JSON(&req); err != nil {
+		return f.Config.ErrorHandler(c, err)
 	}
 
 	// Get order
-	orderInfo, err := g.Config.OrderInfo(
+	orderInfo, err := f.Config.OrderInfo(
 		req.OrderID,
-		c.Request.Header.Get("Authorization"),
+		c.Get("Authorization"),
 	)
 	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+		return f.Config.ErrorHandler(c, err)
 	}
 
 	// Prepare params
 	expire := time.Now().Add(10 * time.Minute).Format(time.RFC3339)
 	bm := make(gopay.BodyMap)
-	bm.Set("appid", g.Config.WeChatPay.AppID).
-		Set("mchid", g.Config.WeChatPay.MerchantID).
+	bm.Set("appid", f.Config.WeChatPay.AppID).
+		Set("mchid", f.Config.WeChatPay.MerchantID).
 		Set("description", orderInfo.Subject).
 		Set("out_trade_no", req.OrderID).
 		Set("time_expire", expire).
 		Set("notify_url", fmt.Sprintf(
-			"%s%s/wechat/callback", g.Config.Endpoint, g.Config.Gin.BasePath(),
+			"%s%s/wechat/callback", f.Config.Endpoint, f.Config.Gin.BasePath(),
 		)).
 		SetBodyMap("amount", func(bm gopay.BodyMap) {
 			bm.Set("total", orderInfo.Price).
@@ -61,79 +58,77 @@ func (g *GinController) Create(c *gin.Context) {
 	switch req.Platform {
 	case model.PlatformPC:
 		// Create a native transaction
-		wxRsp, err := g.Client.WeChat.V3TransactionNative(context.Background(), bm)
+		wxRsp, err := f.Client.WeChat.V3TransactionNative(context.Background(), bm)
 		if err != nil {
-			g.Config.ErrorHandler(c, err)
-			return
+			return f.Config.ErrorHandler(c, err)
 		}
 		if wxRsp.Code != 0 {
-			g.Config.ErrorHandler(c, model.ErrWeChatPayRespCodeInvalid)
-			return
+			return f.Config.ErrorHandler(c, model.ErrWeChatPayRespCodeInvalid)
 		}
 
-		model.GinRespSuccess(c, map[string]string{
+		return model.FiberRespSuccess(c, map[string]string{
 			"payUrl": wxRsp.Response.CodeUrl,
 		})
 	case model.PlatformMobile:
 		fallthrough
 	case model.PlatformWeChat:
 		if req.OpenID == "" {
-			g.Config.ErrorHandler(c, model.ErrOpenIDIsRequired)
-			return
+			return f.Config.ErrorHandler(c, model.ErrOpenIDIsRequired)
 		}
 		bm.SetBodyMap("payer", func(bm gopay.BodyMap) {
 			bm.Set("openid", req.OpenID)
 		})
 
 		// Create a jsapi transaction
-		wxRsp, err := g.Client.WeChat.V3TransactionJsapi(context.Background(), bm)
+		wxRsp, err := f.Client.WeChat.V3TransactionJsapi(context.Background(), bm)
 		if err != nil {
-			g.Config.ErrorHandler(c, err)
-			return
+			return f.Config.ErrorHandler(c, err)
 		}
 		if wxRsp.Code != 0 {
-			g.Config.ErrorHandler(c, model.ErrWeChatPayRespCodeInvalid)
-			return
+			return f.Config.ErrorHandler(c, model.ErrWeChatPayRespCodeInvalid)
 		}
 
 		// Get jsapi sign
-		jsapi, err := g.Client.WeChat.PaySignOfJSAPI(
-			g.Config.WeChatPay.AppID,
+		jsapi, err := f.Client.WeChat.PaySignOfJSAPI(
+			f.Config.WeChatPay.AppID,
 			wxRsp.Response.PrepayId,
 		)
 		if err != nil {
-			g.Config.ErrorHandler(c, err)
-			return
+			return f.Config.ErrorHandler(c, err)
 		}
 
-		model.GinRespSuccess(c, jsapi)
+		return model.FiberRespSuccess(c, jsapi)
 	}
+	return nil
 }
 
-func (g *GinController) Callback(c *gin.Context) {
-	// Parse notify params
-	notifyReq, err := wechat.V3ParseNotify(c.Request)
+func (f *FiberController) Callback(c fiber.Ctx) error {
+	// Convert request
+	httpReq, err := adaptor.ConvertRequest(c, false)
 	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+		return f.Config.ErrorHandler(c, err)
+	}
+
+	// Parse notify params
+	notifyReq, err := wechat.V3ParseNotify(httpReq)
+	if err != nil {
+		return f.Config.ErrorHandler(c, err)
 	}
 
 	// Get public key
-	certMap := g.Client.WeChat.WxPublicKeyMap()
+	certMap := f.Client.WeChat.WxPublicKeyMap()
 	// Verify sign
 	err = notifyReq.VerifySignByPKMap(certMap)
 	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+		return f.Config.ErrorHandler(c, err)
 	}
 
 	// Decrypt message from WeChat Pay
 	wechatPayCallback := &model.WeChatPayCallback{}
 	err = notifyReq.DecryptCipherTextToStruct(
-		g.Config.WeChatPay.MerchantAPIv3Key, wechatPayCallback)
+		f.Config.WeChatPay.MerchantAPIv3Key, wechatPayCallback)
 	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+		return f.Config.ErrorHandler(c, err)
 	}
 
 	var status model.TradeStatus
@@ -148,40 +143,36 @@ func (g *GinController) Callback(c *gin.Context) {
 		status = model.TradeClosed
 	}
 	// Return status
-	err = g.Config.OrderStatus(
+	err = f.Config.OrderStatus(
 		wechatPayCallback.OutTradeNo,
 		status,
 	)
 	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+		return f.Config.ErrorHandler(c, err)
 	}
 
-	c.PureJSON(http.StatusOK, &wechat.V3NotifyRsp{Code: gopay.SUCCESS, Message: "成功"})
+	return c.Status(http.StatusOK).JSON(&wechat.V3NotifyRsp{Code: gopay.SUCCESS, Message: "成功"})
 }
 
-func (g *GinController) OpenIDCallback(c *gin.Context) {
+func (f *FiberController) OpenIDCallback(c fiber.Ctx) error {
 	// Read request params
 	var req model.OpenIDCallbackRequest
-	err := c.ShouldBind(&req)
-	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+	if err := c.Bind().JSON(&req); err != nil {
+		return f.Config.ErrorHandler(c, err)
 	}
 
 	// Request URI
 	URL := fmt.Sprintf(
 		"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code",
-		g.Config.WeChatPay.AppID,
-		g.Config.WeChatPay.AppSecret,
+		f.Config.WeChatPay.AppID,
+		f.Config.WeChatPay.AppSecret,
 		req.Code,
 	)
 
 	// Send Request
 	resp, err := http.Get(URL)
 	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+		return f.Config.ErrorHandler(c, err)
 	}
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
@@ -190,35 +181,31 @@ func (g *GinController) OpenIDCallback(c *gin.Context) {
 	// Read Body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+		return f.Config.ErrorHandler(c, err)
 	}
 
 	// Parse JSON Data
 	var result model.AccessTokenResponse
 	err = sonic.Unmarshal(body, &result)
 	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+		return f.Config.ErrorHandler(c, err)
 	}
 
-	model.GinRespSuccess(c, map[string]string{
+	return model.FiberRespSuccess(c, map[string]string{
 		"openID": result.OpenID,
 	})
 }
 
-func (g *GinController) AuthorizeLinkGen(c *gin.Context) {
+func (f *FiberController) AuthorizeLinkGen(c fiber.Ctx) error {
 	// Read request params
 	var req model.AuthorizeLinkRequest
-	err := c.ShouldBind(&req)
-	if err != nil {
-		g.Config.ErrorHandler(c, err)
-		return
+	if err := c.Bind().JSON(&req); err != nil {
+		return f.Config.ErrorHandler(c, err)
 	}
 
 	// Check same-site origin(?)
-	if !strings.HasPrefix(req.RedirectURI, g.Config.Endpoint) {
-		g.Config.ErrorHandler(c, model.ErrWeChatRedirectURIMismatch)
+	if !strings.HasPrefix(req.RedirectURI, f.Config.Endpoint) {
+		return f.Config.ErrorHandler(c, model.ErrWeChatRedirectURIMismatch)
 	}
 
 	// Encode redirect_uri
@@ -226,13 +213,13 @@ func (g *GinController) AuthorizeLinkGen(c *gin.Context) {
 
 	authURL := fmt.Sprintf(
 		"https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect",
-		g.Config.WeChatPay.AppID,
+		f.Config.WeChatPay.AppID,
 		req.RedirectURI,
 		req.State,
 	)
 
 	// Return authorize link
-	model.GinRespSuccess(c, map[string]string{
+	return model.FiberRespSuccess(c, map[string]string{
 		"url": authURL,
 	})
 }

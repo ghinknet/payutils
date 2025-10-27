@@ -60,7 +60,7 @@ func CreateClient(config model.Config) (*client.Client, error) {
 
 	// Check error handler
 	if config.ErrorHandler == nil {
-		config.ErrorHandler = model.RespInternalServerError
+		config.ErrorHandler = model.DefaultErrorHandler
 	}
 
 	if config.Alipay != nil {
@@ -112,6 +112,11 @@ func CreateClient(config model.Config) (*client.Client, error) {
 	// Register gin route
 	if config.Gin != nil {
 		route.GinRegister(config.Gin, c, config)
+	}
+
+	// Register fiber route
+	if config.Fiber != nil {
+		route.FiberRegister(config.Fiber, c, config)
 	}
 
 	return c, nil
