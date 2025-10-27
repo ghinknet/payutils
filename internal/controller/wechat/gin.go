@@ -219,6 +219,7 @@ func (g *GinController) AuthorizeLinkGen(c *gin.Context) {
 	// Check same-site origin(?)
 	if !strings.HasPrefix(req.RedirectURI, g.Config.Endpoint) {
 		g.Config.ErrorHandler(c, model.ErrWeChatRedirectURIMismatch)
+		return
 	}
 
 	// Encode redirect_uri
