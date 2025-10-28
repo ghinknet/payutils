@@ -4,6 +4,7 @@ import (
 	"errors"
 )
 
+var ErrMissAllowedOrigin = errors.New("miss endpoint")
 var ErrMissEndpoint = errors.New("miss endpoint")
 var ErrMissOrderHandler = errors.New("miss order handler")
 var ErrWeChatPayRespCodeInvalid = errors.New("wechat pay resp code invalid")

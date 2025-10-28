@@ -203,8 +203,15 @@ func (f *FiberController) AuthorizeLinkGen(c fiber.Ctx) error {
 		return f.Config.ErrorHandler(c, err)
 	}
 
-	// Check same-site origin(?)
-	if !strings.HasPrefix(req.RedirectURI, f.Config.Endpoint) {
+	// Check allowed origins
+	allowed := false
+	for _, origin := range f.Config.AllowedOrigin {
+		if strings.HasPrefix(req.RedirectURI, origin) {
+			allowed = true
+			break
+		}
+	}
+	if !allowed {
 		return f.Config.ErrorHandler(c, model.ErrWeChatRedirectURIMismatch)
 	}
 

@@ -216,8 +216,15 @@ func (g *GinController) AuthorizeLinkGen(c *gin.Context) {
 		return
 	}
 
-	// Check same-site origin(?)
-	if !strings.HasPrefix(req.RedirectURI, g.Config.Endpoint) {
+	// Check allowed origins
+	allowed := false
+	for _, origin := range g.Config.AllowedOrigin {
+		if strings.HasPrefix(req.RedirectURI, origin) {
+			allowed = true
+			break
+		}
+	}
+	if !allowed {
 		g.Config.ErrorHandler(c, model.ErrWeChatRedirectURIMismatch)
 		return
 	}

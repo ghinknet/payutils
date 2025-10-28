@@ -26,6 +26,7 @@ const (
 
 type OrderInfo = model.OrderInfo
 
+var ErrMissAllowedOrigin = model.ErrMissAllowedOrigin
 var ErrMissEndpoint = model.ErrMissEndpoint
 var ErrMissOrderHandler = model.ErrMissOrderHandler
 var ErrWeChatPayRespCodeInvalid = model.ErrWeChatPayRespCodeInvalid
@@ -46,6 +47,11 @@ func CreateClient(config model.Config) (*client.Client, error) {
 		debugOption = gopay.DebugOn
 	} else {
 		debugOption = gopay.DebugOff
+	}
+
+	// Check AllowedOrigin
+	if config.AllowedOrigin == nil {
+		return nil, model.ErrMissAllowedOrigin
 	}
 
 	// Check endpoint
