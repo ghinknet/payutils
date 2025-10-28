@@ -48,7 +48,7 @@ func (f *FiberController) Create(c fiber.Ctx) error {
 		Set("out_trade_no", req.OrderID).
 		Set("time_expire", expire).
 		Set("notify_url", fmt.Sprintf(
-			"%s%s/wechat/callback", f.Config.Endpoint, f.Config.Gin.BasePath(),
+			"%s%s/wechat/callback", f.Config.Endpoint, f.Config.Fiber.(*fiber.Group).Prefix,
 		)).
 		SetBodyMap("amount", func(bm gopay.BodyMap) {
 			bm.Set("total", orderInfo.Price).

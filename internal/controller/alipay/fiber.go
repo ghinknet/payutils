@@ -41,7 +41,7 @@ func (f *FiberController) Create(c fiber.Ctx) error {
 		Set("out_trade_no", req.OrderID).
 		Set("total_amount", centsToYuan(orderInfo.Price)).
 		Set("notify_url", fmt.Sprintf(
-			"%s%s/alipay/callback", f.Config.Endpoint, f.Config.Gin.BasePath(),
+			"%s%s/alipay/callback", f.Config.Endpoint, f.Config.Fiber.(*fiber.Group).Prefix,
 		))
 
 	// Create order
@@ -71,7 +71,7 @@ func (f *FiberController) Callback(c fiber.Ctx) error {
 	if err != nil {
 		return f.Config.ErrorHandler(c, err)
 	}
-	
+
 	// Parse notify params
 	notifyReq, err := alipay.ParseNotifyToBodyMap(httpReq)
 	if err != nil {
