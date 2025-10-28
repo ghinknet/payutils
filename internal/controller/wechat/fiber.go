@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"git.ghink.net/ghink/payutils/internal/client"
-	"git.ghink.net/ghink/payutils/internal/model"
+	"git.ghink.net/ghink/payutils/v2/internal/client"
+	"git.ghink.net/ghink/payutils/v2/internal/model"
 	"github.com/bytedance/sonic"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/wechat/v3"

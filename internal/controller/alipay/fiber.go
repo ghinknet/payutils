@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"git.ghink.net/ghink/payutils/internal/client"
-	"git.ghink.net/ghink/payutils/internal/model"
+	"git.ghink.net/ghink/payutils/v2/internal/client"
+	"git.ghink.net/ghink/payutils/v2/internal/model"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay"
 	"github.com/gofiber/fiber/v3"

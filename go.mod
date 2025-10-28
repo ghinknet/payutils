@@ -1,8 +1,9 @@
-module git.ghink.net/ghink/payutils
+module git.ghink.net/ghink/payutils/v2
 
 go 1.25.3
 
 require (
+	github.com/bytedance/sonic v1.14.1
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-pay/gopay v1.5.115
 	github.com/gofiber/fiber/v3 v3.0.0-rc.2
@@ -11,7 +12,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
-	github.com/bytedance/sonic v1.14.1 // indirect
 	github.com/bytedance/sonic/loader v0.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
