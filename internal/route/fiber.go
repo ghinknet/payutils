@@ -1,10 +1,10 @@
 package route
 
 import (
-	"git.ghink.net/ghink/payutils/v2/internal/client"
-	"git.ghink.net/ghink/payutils/v2/internal/controller/alipay"
-	"git.ghink.net/ghink/payutils/v2/internal/controller/wechat"
-	"git.ghink.net/ghink/payutils/v2/internal/model"
+	"git.ghink.net/ghink/payutils/internal/client"
+	"git.ghink.net/ghink/payutils/internal/controller/alipay"
+	"git.ghink.net/ghink/payutils/internal/controller/wechat"
+	"git.ghink.net/ghink/payutils/internal/model"
 	"github.com/gofiber/fiber/v3"
 )
 

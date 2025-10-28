@@ -1,4 +1,4 @@
-module git.ghink.net/ghink/payutils/v2
+module git.ghink.net/ghink/payutils
 
 go 1.25.3
 

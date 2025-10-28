@@ -1,9 +1,9 @@
 package payutils
 
 import (
-	"git.ghink.net/ghink/payutils/v2/internal/client"
-	"git.ghink.net/ghink/payutils/v2/internal/model"
-	"git.ghink.net/ghink/payutils/v2/internal/route"
+	"git.ghink.net/ghink/payutils/internal/client"
+	"git.ghink.net/ghink/payutils/internal/model"
+	"git.ghink.net/ghink/payutils/internal/route"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay/v3"
 	"github.com/go-pay/gopay/wechat/v3"
