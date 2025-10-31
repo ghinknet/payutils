@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"git.ghink.net/ghink/payutils/internal/client"
 
@@ -52,9 +53,18 @@ func (g *GinController) Create(c *gin.Context) {
 		return
 	}
 
+	// Check time
+	if orderInfo.Expiry-time.Now().Unix() < 10 {
+		g.Config.ErrorHandler(c, model.ErrNoEnoughTimeToPay)
+		return
+	}
+
+	// Prepare params
+	expire := time.Unix(orderInfo.Expiry, 0).Add(-5 * time.Second).Format("2006-01-02 15:04:05")
 	// Prepare params
 	bm := make(gopay.BodyMap)
 	bm.Set("subject", orderInfo.Subject).
+		Set("time_expire", expire).
 		Set("out_trade_no", req.OrderID).
 		Set("total_amount", centsToYuan(orderInfo.Price)).
 		Set("notify_url", fmt.Sprintf(
