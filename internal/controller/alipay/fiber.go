@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"git.ghink.net/ghink/payutils/internal/client"
 	"git.ghink.net/ghink/payutils/internal/model"
@@ -35,13 +36,21 @@ func (f *FiberController) Create(c fiber.Ctx) error {
 		return f.Config.ErrorHandler(c, err)
 	}
 
+	// Check time
+	if time.Now().Unix()-orderInfo.Expiry < 10 {
+		return f.Config.ErrorHandler(c, model.ErrNoEnoughTimeToPay)
+	}
+
+	// Prepare params
+	expire := time.Unix(orderInfo.Expiry, 0).Add(-5 * time.Second).Format("2006-01-02 15:04:05")
 	// Prepare params
 	bm := make(gopay.BodyMap)
 	bm.Set("subject", orderInfo.Subject).
+		Set("time_expire", expire).
 		Set("out_trade_no", req.OrderID).
 		Set("total_amount", centsToYuan(orderInfo.Price)).
 		Set("notify_url", fmt.Sprintf(
-			"%s%s/alipay/callback", f.Config.Endpoint, f.Config.Fiber.(*fiber.Group).Prefix,
+			"%s%s/alipay/callback", f.Config.Endpoint, f.Config.Gin.BasePath(),
 		))
 
 	// Create order

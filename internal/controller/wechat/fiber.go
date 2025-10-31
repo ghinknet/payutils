@@ -39,8 +39,13 @@ func (f *FiberController) Create(c fiber.Ctx) error {
 		return f.Config.ErrorHandler(c, err)
 	}
 
+	// Check time
+	if time.Now().Unix()-orderInfo.Expiry < 10 {
+		return f.Config.ErrorHandler(c, model.ErrNoEnoughTimeToPay)
+	}
+
 	// Prepare params
-	expire := time.Now().Add(10 * time.Minute).Format(time.RFC3339)
+	expire := time.Unix(orderInfo.Expiry, 0).Add(-5 * time.Second).Format(time.RFC3339)
 	bm := make(gopay.BodyMap)
 	bm.Set("appid", f.Config.WeChatPay.AppID).
 		Set("mchid", f.Config.WeChatPay.MerchantID).

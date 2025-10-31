@@ -42,8 +42,14 @@ func (g *GinController) Create(c *gin.Context) {
 		return
 	}
 
+	// Check time
+	if time.Now().Unix()-orderInfo.Expiry < 10 {
+		g.Config.ErrorHandler(c, model.ErrNoEnoughTimeToPay)
+		return
+	}
+
 	// Prepare params
-	expire := time.Now().Add(10 * time.Minute).Format(time.RFC3339)
+	expire := time.Unix(orderInfo.Expiry, 0).Add(-5 * time.Second).Format(time.RFC3339)
 	bm := make(gopay.BodyMap)
 	bm.Set("appid", g.Config.WeChatPay.AppID).
 		Set("mchid", g.Config.WeChatPay.MerchantID).
