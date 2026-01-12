@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"git.ghink.net/ghink/payutils/internal/client"
-	"github.com/bytedance/sonic"
+	"github.com/ghinknet/json"
 
 	"git.ghink.net/ghink/payutils/internal/model"
 	"github.com/gin-gonic/gin"
@@ -202,7 +202,7 @@ func (g *GinController) OpenIDCallback(c *gin.Context) {
 
 	// Parse JSON Data
 	var result model.AccessTokenResponse
-	err = sonic.Unmarshal(body, &result)
+	err = json.Unmarshal(body, &result)
 	if err != nil {
 		g.Config.ErrorHandler(c, err)
 		return

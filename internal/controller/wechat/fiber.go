@@ -11,7 +11,7 @@ import (
 
 	"git.ghink.net/ghink/payutils/internal/client"
 	"git.ghink.net/ghink/payutils/internal/model"
-	"github.com/bytedance/sonic"
+	"github.com/ghinknet/json"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/wechat/v3"
 	"github.com/gofiber/fiber/v3"
@@ -191,7 +191,7 @@ func (f *FiberController) OpenIDCallback(c fiber.Ctx) error {
 
 	// Parse JSON Data
 	var result model.AccessTokenResponse
-	err = sonic.Unmarshal(body, &result)
+	err = json.Unmarshal(body, &result)
 	if err != nil {
 		return f.Config.ErrorHandler(c, err)
 	}

@@ -12,16 +12,16 @@ import (
 func FiberRegister(r fiber.Router, client *client.Client, config model.Config) {
 	{
 		alipayRoute := r.Group("/alipay")
-		alipayGinController := alipay.FiberController{Client: client, Config: config}
-		alipayRoute.Post("/create", alipayGinController.Create)
-		alipayRoute.Post("/callback", alipayGinController.Callback)
+		alipayFiberController := alipay.FiberController{Client: client, Config: config}
+		alipayRoute.Post("/create", alipayFiberController.Create)
+		alipayRoute.Post("/callback", alipayFiberController.Callback)
 	}
 	{
 		wechatRoute := r.Group("/wechat")
-		wechatGinController := wechat.FiberController{Client: client, Config: config}
-		wechatRoute.Post("/create", wechatGinController.Create)
-		wechatRoute.Post("/callback", wechatGinController.Callback)
-		wechatRoute.Post("/openIDCallback", wechatGinController.OpenIDCallback)
-		wechatRoute.Post("/authorizeLink", wechatGinController.AuthorizeLinkGen)
+		wechatFiberController := wechat.FiberController{Client: client, Config: config}
+		wechatRoute.Post("/create", wechatFiberController.Create)
+		wechatRoute.Post("/callback", wechatFiberController.Callback)
+		wechatRoute.Post("/openIDCallback", wechatFiberController.OpenIDCallback)
+		wechatRoute.Post("/authorizeLink", wechatFiberController.AuthorizeLinkGen)
 	}
 }
