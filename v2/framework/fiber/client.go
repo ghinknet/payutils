@@ -23,7 +23,7 @@ func CreateClient(config Config) (*Client, error) {
 		debugOption = gopay.DebugOff
 	}
 
-	// Check AllowedOrigin
+	// Check AllowOrigins
 	if client.Config.AllowedOrigin == nil {
 		return nil, model.ErrMissAllowedOrigin
 	}
