@@ -53,6 +53,38 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, er
 
 // Close an order
 func (c *Client) Close(orderID string) error {
+	// Try to close order in WeChat Pay
+	if c.Payment.WeChat != nil {
+		// Close order in WeChat-Pay
+		wxRsp, err := c.Payment.WeChat.V3TransactionCloseOrder(context.Background(), orderID)
+		if err != nil {
+			return err
+		}
+
+		// Check return status
+		if wxRsp.Code != 0 && wxRsp.Code != 404 {
+			return wechat.ErrWeChatPayRespCodeInvalid
+		}
+	}
+
+	// Try to close order in Alipay
+	if c.Payment.Alipay != nil {
+		// Prepare params
+		bm := make(gopay.BodyMap)
+		bm.Set("out_trade_no", orderID)
+
+		// Close order in Alipay
+		aliRsp, err := c.Payment.Alipay.TradeClose(context.Background(), bm)
+		if err != nil {
+			return err
+		}
+
+		// Check return status
+		if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
+			return alipay.ErrAlipayRespCodeInvalid
+		}
+	}
+
 	return nil
 }
 
