@@ -2,12 +2,15 @@ package fiber
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/ghinknet/payutils/v2/model"
 	"github.com/ghinknet/payutils/v2/payment/alipay"
 	"github.com/ghinknet/payutils/v2/payment/wechat"
+	"github.com/ghinknet/payutils/v2/utils"
 	"github.com/go-pay/gopay"
+	"github.com/gofiber/fiber/v3"
 )
 
 // Status returns the status of the order
@@ -89,6 +92,75 @@ func (c *Client) Close(orderID string) error {
 }
 
 // Refund an order
-func (c *Client) Refund(orderID string, method model.TradeMethod) error {
-	return nil
+func (c *Client) Refund(
+	orderID string, method model.TradeMethod,
+	currency string, totalAmount int64,
+	refundID string, refundAmount int64, reason string,
+) error {
+	switch method {
+	case model.TradeMethodAlipay:
+		if c.Payment.Alipay != nil {
+			// Check currency
+			if currency != "CNY" {
+				return model.ErrUnsupportedCurrency
+			}
+
+			// Prepare params
+			bm := make(gopay.BodyMap)
+			bm.Set("out_trade_no", orderID)
+			bm.Set("refund_amount", utils.CentsToYuan(refundAmount))
+			bm.Set("out_request_no", refundID)
+
+			// Set reason
+			if reason != "" {
+				bm.Set("refund_reason", reason)
+			}
+
+			// Refund order in Alipay
+			aliRsp, err := c.Payment.Alipay.TradeRefund(context.Background(), bm)
+			if err != nil {
+				return err
+			}
+
+			// Check return status
+			if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
+				return alipay.ErrAlipayRespCodeInvalid
+			}
+
+			return nil
+		}
+		return model.ErrPaymentMethodDisabled
+	case model.TradeMethodWeChatPay:
+		if c.Payment.WeChat != nil {
+			// Prepare params
+			bm := make(gopay.BodyMap)
+			bm.Set("out_trade_no", orderID).
+				Set("out_refund_no", refundID).
+				Set("reason", reason).
+				Set("notify_url", fmt.Sprintf(
+					"%s%s/wechat/callback", c.Config.Basic.Endpoint, c.Config.Fiber.(*fiber.Group).Prefix,
+				)).
+				SetBodyMap("refundAmount", func(bm gopay.BodyMap) {
+					bm.Set("total", totalAmount).
+						Set("refund", refundAmount).
+						Set("currency", currency)
+				})
+
+			// Refund order in WeChat-Pay
+			wxRsp, err := c.Payment.WeChat.V3Refund(context.Background(), bm)
+			if err != nil {
+				return err
+			}
+
+			// Check return status
+			if wxRsp.Code != 0 && wxRsp.Code != 404 {
+				return wechat.ErrWeChatPayRespCodeInvalid
+			}
+
+			return nil
+		}
+		return model.ErrPaymentMethodDisabled
+	default:
+		return model.ErrUnsupportedMethod
+	}
 }
