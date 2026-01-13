@@ -5,4 +5,6 @@ type Config struct {
 	Debug        bool
 	AllowOrigins []string
 	Endpoint     string
+	Prefix       string
+	Suffix       string
 }

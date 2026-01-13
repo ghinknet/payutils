@@ -52,7 +52,7 @@ func (a *Alipay) Create(c fiber.Ctx) error {
 	bm := make(gopay.BodyMap)
 	bm.Set("subject", orderInfo.Subject).
 		Set("time_expire", expire).
-		Set("out_trade_no", req.OrderID).
+		Set("out_trade_no", fmt.Sprintf("%s%s%s", a.Client.Config.Basic.Prefix, req.OrderID, a.Client.Config.Basic.Suffix)).
 		Set("total_amount", utils.CentsToYuan(orderInfo.Price)).
 		Set("notify_url", fmt.Sprintf(
 			"%s%s/alipay/callback", a.Client.Config.Basic.Endpoint, a.Client.Config.Fiber.(*fiber.Group).Prefix,
@@ -110,7 +110,7 @@ func (a *Alipay) Callback(c fiber.Ctx) error {
 	}
 
 	// Return status
-	err = a.Client.Config.StatusUpdater(
+	err = a.Client.internalStatusUpdater(
 		c,
 		notifyRequest.OutTradeNo,
 		internalAlipay.MapState(notifyRequest.TradeStatus),

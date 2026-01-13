@@ -50,7 +50,7 @@ func (w *WeChatPay) Create(c fiber.Ctx) error {
 	bm.Set("appid", w.Client.Config.WeChatPay.AppID).
 		Set("mchid", w.Client.Config.WeChatPay.MerchantID).
 		Set("description", orderInfo.Subject).
-		Set("out_trade_no", req.OrderID).
+		Set("out_trade_no", fmt.Sprintf("%s%s%s", w.Client.Config.Basic.Prefix, req.OrderID, w.Client.Config.Basic.Suffix)).
 		Set("time_expire", expire).
 		Set("notify_url", fmt.Sprintf(
 			"%s%s/wechat/callback", w.Client.Config.Basic.Endpoint, w.Client.Config.Fiber.(*fiber.Group).Prefix,
@@ -137,7 +137,7 @@ func (w *WeChatPay) Callback(c fiber.Ctx) error {
 	}
 
 	// Return status
-	err = w.Client.Config.StatusUpdater(
+	err = w.Client.internalStatusUpdater(
 		c,
 		wechatPayCallback.OutTradeNo,
 		internalWeChat.MapState(wechatPayCallback.TradeState),

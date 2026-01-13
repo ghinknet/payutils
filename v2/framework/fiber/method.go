@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/ghinknet/payutils/v2/model"
 	"github.com/ghinknet/payutils/v2/payment/alipay"
@@ -18,7 +19,11 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, er
 	// Try to check in WeChat Pay
 	if c.Payment.WeChat != nil {
 		// Check WeChat-Pay
-		wxRsp, err := c.Payment.WeChat.V3TransactionQueryOrder(context.Background(), 2, orderID)
+		wxRsp, err := c.Payment.WeChat.V3TransactionQueryOrder(
+			context.Background(), 2, fmt.Sprintf(
+				"%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix,
+			),
+		)
 		if err != nil {
 			return model.TradeStateUnknown, model.TradeMethodUnknown, err
 		}
@@ -35,7 +40,7 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, er
 	if c.Payment.Alipay != nil {
 		// Prepare params
 		bm := make(gopay.BodyMap)
-		bm.Set("out_trade_no", orderID)
+		bm.Set("out_trade_no", fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix))
 
 		// Check Alipay
 		aliRsp, err := c.Payment.Alipay.TradeQuery(context.Background(), bm)
@@ -59,7 +64,9 @@ func (c *Client) Close(orderID string) error {
 	// Try to close order in WeChat Pay
 	if c.Payment.WeChat != nil {
 		// Close order in WeChat-Pay
-		wxRsp, err := c.Payment.WeChat.V3TransactionCloseOrder(context.Background(), orderID)
+		wxRsp, err := c.Payment.WeChat.V3TransactionCloseOrder(
+			context.Background(), fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix),
+		)
 		if err != nil {
 			return err
 		}
@@ -74,7 +81,7 @@ func (c *Client) Close(orderID string) error {
 	if c.Payment.Alipay != nil {
 		// Prepare params
 		bm := make(gopay.BodyMap)
-		bm.Set("out_trade_no", orderID)
+		bm.Set("out_trade_no", fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix))
 
 		// Close order in Alipay
 		aliRsp, err := c.Payment.Alipay.TradeClose(context.Background(), bm)
@@ -107,9 +114,13 @@ func (c *Client) Refund(
 
 			// Prepare params
 			bm := make(gopay.BodyMap)
-			bm.Set("out_trade_no", orderID)
+			bm.Set("out_trade_no",
+				fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix),
+			)
 			bm.Set("refund_amount", utils.CentsToYuan(refundAmount))
-			bm.Set("out_request_no", refundID)
+			bm.Set("out_request_no",
+				fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, refundID, c.Config.Basic.Suffix),
+			)
 
 			// Set reason
 			if reason != "" {
@@ -134,8 +145,12 @@ func (c *Client) Refund(
 		if c.Payment.WeChat != nil {
 			// Prepare params
 			bm := make(gopay.BodyMap)
-			bm.Set("out_trade_no", orderID).
-				Set("out_refund_no", refundID).
+			bm.Set("out_trade_no",
+				fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix),
+			).
+				Set("out_refund_no",
+					fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, refundID, c.Config.Basic.Suffix),
+				).
 				Set("reason", reason).
 				Set("notify_url", fmt.Sprintf(
 					"%s%s/wechat/callback", c.Config.Basic.Endpoint, c.Config.Fiber.(*fiber.Group).Prefix,
@@ -163,4 +178,13 @@ func (c *Client) Refund(
 	default:
 		return model.ErrUnsupportedMethod
 	}
+}
+
+// internalStatusUpdater preprocess orderID then call external updater
+func (c *Client) internalStatusUpdater(ctx fiber.Ctx, orderID string, status model.TradeState) error {
+	// Process orderID
+	orderID = strings.TrimPrefix(orderID, c.Config.Basic.Prefix)
+	orderID = strings.TrimSuffix(orderID, c.Config.Basic.Suffix)
+
+	return c.Config.StatusUpdater(ctx, orderID, status)
 }
