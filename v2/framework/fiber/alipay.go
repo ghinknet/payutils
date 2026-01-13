@@ -55,7 +55,7 @@ func (a *Alipay) Create(c fiber.Ctx) error {
 		Set("out_trade_no", req.OrderID).
 		Set("total_amount", utils.CentsToYuan(orderInfo.Price)).
 		Set("notify_url", fmt.Sprintf(
-			"%s%s/alipay/callback", a.Client.Config.Endpoint, a.Client.Config.Fiber.(*fiber.Group).Prefix,
+			"%s%s/alipay/callback", a.Client.Config.Basic.Endpoint, a.Client.Config.Fiber.(*fiber.Group).Prefix,
 		))
 
 	// Create order

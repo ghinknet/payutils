@@ -53,7 +53,7 @@ func (w *WeChatPay) Create(c fiber.Ctx) error {
 		Set("out_trade_no", req.OrderID).
 		Set("time_expire", expire).
 		Set("notify_url", fmt.Sprintf(
-			"%s%s/wechat/callback", w.Client.Config.Endpoint, w.Client.Config.Fiber.(*fiber.Group).Prefix,
+			"%s%s/wechat/callback", w.Client.Config.Basic.Endpoint, w.Client.Config.Fiber.(*fiber.Group).Prefix,
 		)).
 		SetBodyMap("amount", func(bm gopay.BodyMap) {
 			bm.Set("total", orderInfo.Price).
@@ -200,7 +200,7 @@ func (w *WeChatPay) AuthorizeLinkGen(c fiber.Ctx) error {
 
 	// Check allowed origins
 	allowed := false
-	for _, origin := range w.Client.Config.AllowedOrigin {
+	for _, origin := range w.Client.Config.Basic.AllowOrigins {
 		if strings.HasPrefix(req.RedirectURI, origin) {
 			allowed = true
 			break

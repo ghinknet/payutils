@@ -17,19 +17,19 @@ func CreateClient(config Config) (*Client, error) {
 
 	// Debug switch
 	var debugOption gopay.DebugSwitch
-	if client.Config.Debug {
+	if client.Config.Basic.Debug {
 		debugOption = gopay.DebugOn
 	} else {
 		debugOption = gopay.DebugOff
 	}
 
 	// Check AllowOrigins
-	if client.Config.AllowedOrigin == nil {
+	if client.Config.Basic.AllowOrigins == nil {
 		return nil, model.ErrMissAllowedOrigin
 	}
 
 	// Check endpoint
-	if client.Config.Endpoint == "" {
+	if client.Config.Basic.Endpoint == "" {
 		return nil, model.ErrMissEndpoint
 	}
 
