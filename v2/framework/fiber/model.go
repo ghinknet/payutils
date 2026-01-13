@@ -10,7 +10,7 @@ import (
 // Config provides specific config options for framework
 type Config struct {
 	// Public options
-	model.Config
+	Basic model.Config
 	// Framework options
 	Fiber          fiber.Router
 	ErrorHandler   func(c fiber.Ctx, err error) error

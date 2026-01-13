@@ -50,3 +50,13 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, er
 
 	return model.TradeStateUnknown, model.TradeMethodUnknown, nil
 }
+
+// Close an order
+func (c *Client) Close(orderID string) error {
+	return nil
+}
+
+// Refund an order
+func (c *Client) Refund(orderID string, method model.TradeMethod) error {
+	return nil
+}
