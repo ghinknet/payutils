@@ -155,7 +155,7 @@ func (c *Client) Refund(
 				Set("notify_url", fmt.Sprintf(
 					"%s%s/wechat/callback", c.Config.Basic.Endpoint, c.Config.Fiber.(*fiber.Group).Prefix,
 				)).
-				SetBodyMap("refundAmount", func(bm gopay.BodyMap) {
+				SetBodyMap("amount", func(bm gopay.BodyMap) {
 					bm.Set("total", totalAmount).
 						Set("refund", refundAmount).
 						Set("currency", currency)
