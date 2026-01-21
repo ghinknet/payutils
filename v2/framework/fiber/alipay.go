@@ -114,6 +114,7 @@ func (a *Alipay) Callback(c fiber.Ctx) error {
 		c,
 		notifyRequest.OutTradeNo,
 		internalAlipay.MapState(notifyRequest.TradeStatus),
+		model.TradeMethodAlipay,
 	)
 	if err != nil {
 		return a.Client.Config.ErrorHandler(c, err)

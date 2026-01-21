@@ -141,6 +141,7 @@ func (w *WeChatPay) Callback(c fiber.Ctx) error {
 		c,
 		wechatPayCallback.OutTradeNo,
 		internalWeChat.MapState(wechatPayCallback.TradeState),
+		model.TradeMethodWeChatPay,
 	)
 	if err != nil {
 		return w.Client.Config.ErrorHandler(c, err)

@@ -181,10 +181,12 @@ func (c *Client) Refund(
 }
 
 // internalStatusUpdater preprocess orderID then call external updater
-func (c *Client) internalStatusUpdater(ctx fiber.Ctx, orderID string, status model.TradeState) error {
+func (c *Client) internalStatusUpdater(
+	ctx fiber.Ctx, orderID string, status model.TradeState, method model.TradeMethod,
+) error {
 	// Process orderID
 	orderID = strings.TrimPrefix(orderID, c.Config.Basic.Prefix)
 	orderID = strings.TrimSuffix(orderID, c.Config.Basic.Suffix)
 
-	return c.Config.StatusUpdater(ctx, orderID, status)
+	return c.Config.StatusUpdater(ctx, orderID, status, method)
 }
