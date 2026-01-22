@@ -1,6 +1,10 @@
 package alipay
 
-import "github.com/ghinknet/payutils/v2/model"
+import (
+	"time"
+
+	"github.com/ghinknet/payutils/v2/model"
+)
 
 // Config provides needed config options for Alipay
 type Config struct {
@@ -43,4 +47,22 @@ func MapState(state string) model.TradeState {
 		return model.TradeStateUnknown
 	}
 	return internalState
+}
+
+// FormatTime provides a method to map trade time (string) to internal time
+func FormatTime(timeStr string) time.Time {
+	if timeStr == "" {
+		return time.Time{}
+	}
+
+	// Timezone for alipay
+	shanghai, _ := time.LoadLocation("Asia/Shanghai")
+
+	// Format time
+	timeObj, err := time.ParseInLocation("2006-01-02 15:04:05", timeStr, shanghai)
+	if err != nil {
+		return time.Time{}
+	}
+
+	return timeObj
 }

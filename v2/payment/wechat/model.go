@@ -1,6 +1,10 @@
 package wechat
 
-import "github.com/ghinknet/payutils/v2/model"
+import (
+	"time"
+
+	"github.com/ghinknet/payutils/v2/model"
+)
 
 // Config provides needed config options for WeChat Pay
 type Config struct {
@@ -45,6 +49,21 @@ func MapState(state string) model.TradeState {
 		return model.TradeStateUnknown
 	}
 	return internalState
+}
+
+// FormatTime provides a method to map trade time (string) to internal time
+func FormatTime(timeStr string) time.Time {
+	if timeStr == "" {
+		return time.Time{}
+	}
+
+	// Format time
+	timeObj, err := time.ParseInLocation(time.RFC3339, timeStr, time.Local)
+	if err != nil {
+		return time.Time{}
+	}
+
+	return timeObj
 }
 
 // TradeType provides enum type for WeChat trade type const

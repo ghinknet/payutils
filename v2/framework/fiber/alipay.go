@@ -109,12 +109,24 @@ func (a *Alipay) Callback(c fiber.Ctx) error {
 		return a.Client.Config.ErrorHandler(c, err)
 	}
 
+	// Get trade time
+	tradeTime := internalAlipay.FormatTime(notifyRequest.NotifyTime)
+	switch notifyRequest.TradeStatus {
+	case internalAlipay.TradeStateWaitBuyerPay:
+		tradeTime = internalAlipay.FormatTime(notifyRequest.GmtCreate)
+	case internalAlipay.TradeStateSuccess:
+		tradeTime = internalAlipay.FormatTime(notifyRequest.GmtPayment)
+	case internalAlipay.TradeStateClosed:
+		tradeTime = internalAlipay.FormatTime(notifyRequest.GmtClose)
+	}
+
 	// Return status
 	err = a.Client.internalStatusUpdater(
 		c,
 		notifyRequest.OutTradeNo,
 		internalAlipay.MapState(notifyRequest.TradeStatus),
 		model.TradeMethodAlipay,
+		tradeTime,
 	)
 	if err != nil {
 		return a.Client.Config.ErrorHandler(c, err)

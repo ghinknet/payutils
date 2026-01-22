@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ghinknet/payutils/v2/model"
 	"github.com/ghinknet/payutils/v2/payment/alipay"
@@ -15,7 +16,7 @@ import (
 )
 
 // Status returns the status of the order
-func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, error) {
+func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, time.Time, error) {
 	// Try to check in WeChat Pay
 	if c.Payment.WeChat != nil {
 		// Check WeChat-Pay
@@ -25,38 +26,40 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, er
 			),
 		)
 		if err != nil {
-			return model.TradeStateUnknown, model.TradeMethodUnknown, err
+			return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, err
 		}
 
 		// Check return status
 		if wxRsp.Code != 0 && wxRsp.Code != 404 {
-			return model.TradeStateUnknown, model.TradeMethodUnknown, wechat.ErrWeChatPayRespCodeInvalid
+			return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, wechat.ErrWeChatPayRespCodeInvalid
 		}
 
-		return wechat.MapState(wxRsp.Response.TradeState), model.TradeMethodWeChatPay, nil
+		return wechat.MapState(wxRsp.Response.TradeState), model.TradeMethodWeChatPay,
+			wechat.FormatTime(wxRsp.Response.SuccessTime), nil
 	}
 
 	// Try to check in Alipay
 	if c.Payment.Alipay != nil {
 		// Prepare params
 		bm := make(gopay.BodyMap)
-		bm.Set("out_trade_no", fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix))
+		bm.Set("out_trade_no", fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix)).
+			Set("query_options", []string{"send_pay_date"})
 
 		// Check Alipay
 		aliRsp, err := c.Payment.Alipay.TradeQuery(context.Background(), bm)
 		if err != nil {
-			return model.TradeStateUnknown, model.TradeMethodUnknown, err
+			return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, err
 		}
 
 		// Check return status
 		if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
-			return model.TradeStateUnknown, model.TradeMethodUnknown, alipay.ErrAlipayRespCodeInvalid
+			return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, alipay.ErrAlipayRespCodeInvalid
 		}
 
-		return alipay.MapState(aliRsp.TradeStatus), model.TradeMethodAlipay, nil
+		return alipay.MapState(aliRsp.TradeStatus), model.TradeMethodAlipay, alipay.FormatTime(aliRsp.SendPayDate), nil
 	}
 
-	return model.TradeStateUnknown, model.TradeMethodUnknown, nil
+	return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, nil
 }
 
 // Close an order
@@ -182,11 +185,11 @@ func (c *Client) Refund(
 
 // internalStatusUpdater preprocess orderID then call external updater
 func (c *Client) internalStatusUpdater(
-	ctx fiber.Ctx, orderID string, status model.TradeState, method model.TradeMethod,
+	ctx fiber.Ctx, orderID string, status model.TradeState, method model.TradeMethod, tm time.Time,
 ) error {
 	// Process orderID
 	orderID = strings.TrimPrefix(orderID, c.Config.Basic.Prefix)
 	orderID = strings.TrimSuffix(orderID, c.Config.Basic.Suffix)
 
-	return c.Config.StatusUpdater(ctx, orderID, status, method)
+	return c.Config.StatusUpdater(ctx, orderID, status, method, tm)
 }

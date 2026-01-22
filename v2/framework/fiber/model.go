@@ -1,6 +1,8 @@
 package fiber
 
 import (
+	"time"
+
 	"github.com/ghinknet/payutils/v2/model"
 	"github.com/ghinknet/payutils/v2/payment/alipay"
 	"github.com/ghinknet/payutils/v2/payment/wechat"
@@ -15,7 +17,7 @@ type Config struct {
 	Fiber          fiber.Router
 	ErrorHandler   func(c fiber.Ctx, err error) error
 	DetailProvider func(c fiber.Ctx, orderID string, method model.TradeMethod) (model.OrderDetail, error)
-	StatusUpdater  func(c fiber.Ctx, orderID string, status model.TradeState, method model.TradeMethod) error
+	StatusUpdater  func(c fiber.Ctx, orderID string, status model.TradeState, method model.TradeMethod, tm time.Time) error
 	// Payment options
 	Alipay    *alipay.Config
 	WeChatPay *wechat.Config
