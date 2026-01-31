@@ -34,8 +34,11 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, ti
 			return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, wechat.ErrWeChatPayRespCodeInvalid
 		}
 
-		return wechat.MapState(wxRsp.Response.TradeState), model.TradeMethodWeChatPay,
-			wechat.FormatTime(wxRsp.Response.SuccessTime), nil
+		// Success
+		if wxRsp.Code == 0 {
+			return wechat.MapState(wxRsp.Response.TradeState), model.TradeMethodWeChatPay,
+				wechat.FormatTime(wxRsp.Response.SuccessTime), nil
+		}
 	}
 
 	// Try to check in Alipay
@@ -56,7 +59,10 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, ti
 			return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, alipay.ErrAlipayRespCodeInvalid
 		}
 
-		return alipay.MapState(aliRsp.TradeStatus), model.TradeMethodAlipay, alipay.FormatTime(aliRsp.SendPayDate), nil
+		// Success
+		if aliRsp.StatusCode == 200 {
+			return alipay.MapState(aliRsp.TradeStatus), model.TradeMethodAlipay, alipay.FormatTime(aliRsp.SendPayDate), nil
+		}
 	}
 
 	return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, nil
