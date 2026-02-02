@@ -12,7 +12,7 @@ func CreateClient(config Config) (*Client, error) {
 	// Create a new client
 	client := &Client{
 		Config:  &config,
-		Payment: &model.Client{},
+		Payment: new(model.Client),
 	}
 
 	// Debug switch
@@ -57,12 +57,11 @@ func CreateClient(config Config) (*Client, error) {
 			return nil, err
 		}
 		// Set alipay cert
-		err = client.Payment.Alipay.SetCert(
+		if err = client.Payment.Alipay.SetCert(
 			[]byte(client.Config.Alipay.AppCert),
 			[]byte(client.Config.Alipay.RootCert),
 			[]byte(client.Config.Alipay.PublicCert),
-		)
-		if err != nil {
+		); err != nil {
 			return nil, err
 		}
 		// Debug switch
@@ -81,11 +80,10 @@ func CreateClient(config Config) (*Client, error) {
 			return nil, err
 		}
 		// Auto verify sign by public key
-		err = client.Payment.WeChat.AutoVerifySignByPublicKey(
+		if err = client.Payment.WeChat.AutoVerifySignByPublicKey(
 			[]byte(client.Config.WeChatPay.PublicKey),
 			client.Config.WeChatPay.PublicKeyID,
-		)
-		if err != nil {
+		); err != nil {
 			return nil, err
 		}
 		// Debug switch

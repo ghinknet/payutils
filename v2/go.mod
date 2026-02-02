@@ -5,7 +5,7 @@ go 1.25.3
 require (
 	github.com/ghinknet/json v1.1.1
 	github.com/go-pay/gopay v1.5.115
-	github.com/gofiber/fiber/v3 v3.0.0-rc.3
+	github.com/gofiber/fiber/v3 v3.0.0
 )
 
 require (

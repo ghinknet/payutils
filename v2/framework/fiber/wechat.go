@@ -123,28 +123,25 @@ func (w *WeChatPay) Callback(c fiber.Ctx) error {
 	// Get public key
 	certMap := w.Client.Payment.WeChat.WxPublicKeyMap()
 	// Verify sign
-	err = notifyReq.VerifySignByPKMap(certMap)
-	if err != nil {
+	if err = notifyReq.VerifySignByPKMap(certMap); err != nil {
 		return w.Client.Config.ErrorHandler(c, err)
 	}
 
 	// Decrypt message from WeChat Pay
-	wechatPayCallback := &internalWeChat.WeChatPayCallback{}
-	err = notifyReq.DecryptCipherTextToStruct(
-		w.Client.Config.WeChatPay.MerchantAPIv3Key, wechatPayCallback)
-	if err != nil {
+	wechatPayCallback := new(internalWeChat.WeChatPayCallback)
+	if err = notifyReq.DecryptCipherTextToStruct(
+		w.Client.Config.WeChatPay.MerchantAPIv3Key, wechatPayCallback); err != nil {
 		return w.Client.Config.ErrorHandler(c, err)
 	}
 
 	// Return status
-	err = w.Client.internalStatusUpdater(
+	if err = w.Client.internalStatusUpdater(
 		c,
 		wechatPayCallback.OutTradeNo,
 		internalWeChat.MapState(wechatPayCallback.TradeState),
 		model.TradeMethodWeChatPay,
 		internalWeChat.FormatTime(wechatPayCallback.SuccessTime),
-	)
-	if err != nil {
+	); err != nil {
 		return w.Client.Config.ErrorHandler(c, err)
 	}
 
@@ -183,8 +180,7 @@ func (w *WeChatPay) OpenIDCallback(c fiber.Ctx) error {
 
 	// Parse JSON Data
 	var result internalWeChat.AccessTokenResponse
-	err = json.Unmarshal(body, &result)
-	if err != nil {
+	if err = json.Unmarshal(body, &result); err != nil {
 		return w.Client.Config.ErrorHandler(c, err)
 	}
 

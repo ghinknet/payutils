@@ -103,9 +103,8 @@ func (a *Alipay) Callback(c fiber.Ctx) error {
 
 	// Parse data
 	// Docs: https://opendocs.alipay.com/open/203/105286
-	notifyRequest := &alipay.NotifyRequest{}
-	err = notifyReq.Unmarshal(notifyRequest)
-	if err != nil {
+	notifyRequest := new(alipay.NotifyRequest)
+	if err = notifyReq.Unmarshal(notifyRequest); err != nil {
 		return a.Client.Config.ErrorHandler(c, err)
 	}
 
@@ -121,14 +120,13 @@ func (a *Alipay) Callback(c fiber.Ctx) error {
 	}
 
 	// Return status
-	err = a.Client.internalStatusUpdater(
+	if err = a.Client.internalStatusUpdater(
 		c,
 		notifyRequest.OutTradeNo,
 		internalAlipay.MapState(notifyRequest.TradeStatus),
 		model.TradeMethodAlipay,
 		tradeTime,
-	)
-	if err != nil {
+	); err != nil {
 		return a.Client.Config.ErrorHandler(c, err)
 	}
 
