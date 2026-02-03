@@ -103,7 +103,7 @@ func (a *Alipay) Callback(c fiber.Ctx) error {
 
 	// Try to parse if body is JSON
 	for k, v := range notifyReq {
-		var body any
+		var body []any
 		if str, ok := v.(string); ok {
 			if err = a.Client.Config.Unmarshal([]byte(str), &body); err == nil {
 				notifyReq.Set(k, body)
