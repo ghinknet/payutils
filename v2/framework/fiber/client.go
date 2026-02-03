@@ -1,6 +1,7 @@
 package fiber
 
 import (
+	"github.com/ghinknet/json"
 	"github.com/ghinknet/payutils/v2/model"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay/v3"
@@ -41,6 +42,14 @@ func CreateClient(config Config) (*Client, error) {
 	// Check error handler
 	if client.Config.ErrorHandler == nil {
 		client.Config.ErrorHandler = RespInternalServerError
+	}
+
+	// Check methods
+	if client.Config.Marshal == nil {
+		client.Config.Marshal = json.Marshal
+	}
+	if client.Config.Unmarshal == nil {
+		client.Config.Unmarshal = json.Unmarshal
 	}
 
 	// Init payment

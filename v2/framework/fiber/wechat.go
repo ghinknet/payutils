@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ghinknet/json"
 	"github.com/ghinknet/payutils/v2/model"
 	internalWeChat "github.com/ghinknet/payutils/v2/payment/wechat"
 	"github.com/go-pay/gopay"
@@ -180,7 +179,7 @@ func (w *WeChatPay) OpenIDCallback(c fiber.Ctx) error {
 
 	// Parse JSON Data
 	var result internalWeChat.AccessTokenResponse
-	if err = json.Unmarshal(body, &result); err != nil {
+	if err = w.Client.Config.Unmarshal(body, &result); err != nil {
 		return w.Client.Config.ErrorHandler(c, err)
 	}
 

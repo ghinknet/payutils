@@ -18,6 +18,9 @@ type Config struct {
 	ErrorHandler   func(c fiber.Ctx, err error) error
 	DetailProvider func(c fiber.Ctx, orderID string, method model.TradeMethod) (model.OrderDetail, error)
 	StatusUpdater  func(c fiber.Ctx, orderID string, status model.TradeState, method model.TradeMethod, tm time.Time) error
+	// Method
+	Unmarshal func(data []byte, v any) error
+	Marshal   func(v any) ([]byte, error)
 	// Payment options
 	Alipay    *alipay.Config
 	WeChatPay *wechat.Config

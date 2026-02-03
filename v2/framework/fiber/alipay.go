@@ -92,6 +92,16 @@ func (a *Alipay) Callback(c fiber.Ctx) error {
 		return a.Client.Config.ErrorHandler(c, err)
 	}
 
+	// Try to parse if body is JSON
+	for k, v := range notifyReq {
+		var body any
+		if str, ok := v.(string); ok {
+			if err = a.Client.Config.Unmarshal([]byte(str), body); err == nil {
+				notifyReq.Set(k, body)
+			}
+		}
+	}
+
 	// Verify sign by alipay public cert
 	ok, err := alipay.VerifySignWithCert([]byte(a.Client.Config.Alipay.PublicCert), notifyReq)
 	if err != nil {
