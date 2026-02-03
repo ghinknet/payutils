@@ -96,7 +96,7 @@ func (a *Alipay) Callback(c fiber.Ctx) error {
 	for k, v := range notifyReq {
 		var body any
 		if str, ok := v.(string); ok {
-			if err = a.Client.Config.Unmarshal([]byte(str), body); err == nil {
+			if err = a.Client.Config.Unmarshal([]byte(str), &body); err == nil {
 				notifyReq.Set(k, body)
 			}
 		}
