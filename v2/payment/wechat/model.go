@@ -77,20 +77,20 @@ const (
 )
 
 type WeChatPayCallback struct {
-	TransactionID   string            `json:"transaction_id"`
-	Amount          AmountInfo        `json:"amount"`
-	MchID           string            `json:"mchid"`
-	TradeState      string            `json:"trade_state"`
-	BankType        string            `json:"bank_type"`
-	PromotionDetail []PromotionDetail `json:"promotion_detail,omitempty"`
-	SuccessTime     string            `json:"success_time"`
-	Payer           PayerInfo         `json:"payer"`
-	OutTradeNo      string            `json:"out_trade_no"`
-	AppID           string            `json:"appid"`
-	TradeStateDesc  string            `json:"trade_state_desc"`
-	TradeType       TradeType         `json:"trade_type"`
-	Attach          string            `json:"attach,omitempty"`
-	SceneInfo       SceneInfo         `json:"scene_info,omitempty"`
+	TransactionID   string             `json:"transaction_id"`
+	Amount          AmountInfo         `json:"amount"`
+	MchID           string             `json:"mchid"`
+	TradeState      string             `json:"trade_state"`
+	BankType        string             `json:"bank_type"`
+	PromotionDetail []*PromotionDetail `json:"promotion_detail,omitempty"`
+	SuccessTime     string             `json:"success_time"`
+	Payer           PayerInfo          `json:"payer"`
+	OutTradeNo      string             `json:"out_trade_no"`
+	AppID           string             `json:"appid"`
+	TradeStateDesc  string             `json:"trade_state_desc"`
+	TradeType       TradeType          `json:"trade_type"`
+	Attach          string             `json:"attach,omitempty"`
+	SceneInfo       SceneInfo          `json:"scene_info,omitempty"`
 }
 
 type AmountInfo struct {
@@ -101,16 +101,16 @@ type AmountInfo struct {
 }
 
 type PromotionDetail struct {
-	Amount              int           `json:"amount"`
-	WeChatPayContribute int           `json:"wechatpay_contribute"`
-	CouponID            string        `json:"coupon_id"`
-	Scope               string        `json:"scope"`
-	MerchantContribute  int           `json:"merchant_contribute"`
-	Name                string        `json:"name"`
-	OtherContribute     int           `json:"other_contribute"`
-	Currency            string        `json:"currency"`
-	StockID             string        `json:"stock_id"`
-	GoodsDetail         []GoodsDetail `json:"goods_detail,omitempty"`
+	Amount              int            `json:"amount"`
+	WeChatPayContribute int            `json:"wechatpay_contribute"`
+	CouponID            string         `json:"coupon_id"`
+	Scope               string         `json:"scope"`
+	MerchantContribute  int            `json:"merchant_contribute"`
+	Name                string         `json:"name"`
+	OtherContribute     int            `json:"other_contribute"`
+	Currency            string         `json:"currency"`
+	StockID             string         `json:"stock_id"`
+	GoodsDetail         []*GoodsDetail `json:"goods_detail,omitempty"`
 }
 
 type GoodsDetail struct {
