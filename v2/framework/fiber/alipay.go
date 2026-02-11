@@ -47,7 +47,8 @@ func (a *Alipay) Create(c fiber.Ctx) error {
 	}
 
 	// Prepare params
-	expire := time.Unix(orderInfo.Expiry, 0).Add(-5 * time.Second).Format("2006-01-02 15:04:05")
+	shanghai, _ := time.LoadLocation("Asia/Shanghai")
+	expire := time.Unix(orderInfo.Expiry, 0).In(shanghai).Add(-5 * time.Second).Format("2006-01-02 15:04:05")
 	// Prepare params
 	bm := make(gopay.BodyMap)
 	bm.Set("subject", orderInfo.Subject).
