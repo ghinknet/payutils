@@ -13,6 +13,11 @@ func (e *PayutilsError) Error() string {
 	return e.message
 }
 
+// Is returns the compare result of two error value
+func Is(err error, target error) bool {
+	return err.Error() == target.Error()
+}
+
 // UpstreamDetail returns detail of upstream error in error value
 func (e *PayutilsError) UpstreamDetail() (int, string, string) {
 	return e.upstreamCode, e.upstreamResponse, e.upstreamMessage
