@@ -1,7 +1,21 @@
 package wechat
 
-import "errors"
+import (
+	"github.com/ghinknet/payutils/v2/model"
+)
 
-var ErrWeChatPayRespCodeInvalid = errors.New("wechat pay resp code invalid")
-var ErrWeChatRedirectURIMismatch = errors.New("wechat redirect uri mismatch")
-var ErrWeChatOpenIDIsRequired = errors.New("wechat open id is required")
+func ErrWeChatPayRespCodeInvalid(
+	upstreamCode int,
+	upstreamResponse string,
+	upstreamMessage string,
+) error {
+	return model.New(
+		"wechat pay resp code invalid",
+		model.WithUpstreamCode(upstreamCode),
+		model.WithUpstreamResponse(upstreamResponse),
+		model.WithUpstreamMessage(upstreamMessage),
+	)
+}
+
+var ErrWeChatRedirectURIMismatch = model.New("wechat redirect uri mismatch")
+var ErrWeChatOpenIDIsRequired = model.New("wechat open id is required")

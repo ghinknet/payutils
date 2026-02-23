@@ -31,7 +31,10 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, ti
 
 		// Check return status
 		if wxRsp.Code != 0 && wxRsp.Code != 404 {
-			return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, wechat.ErrWeChatPayRespCodeInvalid
+			return model.TradeStateUnknown, model.TradeMethodUnknown,
+				time.Time{}, wechat.ErrWeChatPayRespCodeInvalid(
+					wxRsp.Code, wxRsp.ErrResponse.Code, wxRsp.ErrResponse.Message,
+				)
 		}
 
 		// Success
@@ -56,7 +59,10 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, ti
 
 		// Check return status
 		if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
-			return model.TradeStateUnknown, model.TradeMethodUnknown, time.Time{}, alipay.ErrAlipayRespCodeInvalid
+			return model.TradeStateUnknown, model.TradeMethodUnknown,
+				time.Time{}, alipay.ErrAlipayRespCodeInvalid(
+					aliRsp.StatusCode, aliRsp.ErrResponse.Code, aliRsp.ErrResponse.Message,
+				)
 		}
 
 		// Success
@@ -82,7 +88,9 @@ func (c *Client) Close(orderID string) error {
 
 		// Check return status
 		if wxRsp.Code != 0 && wxRsp.Code != 404 {
-			return wechat.ErrWeChatPayRespCodeInvalid
+			return wechat.ErrWeChatPayRespCodeInvalid(
+				wxRsp.Code, wxRsp.ErrResponse.Code, wxRsp.ErrResponse.Message,
+			)
 		}
 	}
 
@@ -100,7 +108,9 @@ func (c *Client) Close(orderID string) error {
 
 		// Check return status
 		if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
-			return alipay.ErrAlipayRespCodeInvalid
+			return alipay.ErrAlipayRespCodeInvalid(
+				aliRsp.StatusCode, aliRsp.ErrResponse.Code, aliRsp.ErrResponse.Message,
+			)
 		}
 	}
 
@@ -144,7 +154,9 @@ func (c *Client) Refund(
 
 			// Check return status
 			if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
-				return alipay.ErrAlipayRespCodeInvalid
+				return alipay.ErrAlipayRespCodeInvalid(
+					aliRsp.StatusCode, aliRsp.ErrResponse.Code, aliRsp.ErrResponse.Message,
+				)
 			}
 
 			return nil
@@ -178,7 +190,9 @@ func (c *Client) Refund(
 
 			// Check return status
 			if wxRsp.Code != 0 && wxRsp.Code != 404 {
-				return wechat.ErrWeChatPayRespCodeInvalid
+				return wechat.ErrWeChatPayRespCodeInvalid(
+					wxRsp.Code, wxRsp.ErrResponse.Code, wxRsp.ErrResponse.Message,
+				)
 			}
 
 			return nil
