@@ -4,7 +4,7 @@ import (
 	"github.com/ghinknet/payutils/v2/model"
 )
 
-func ErrAlipayRespCodeInvalid(
+func ErrAlipayRespCodeInvalidBuilder(
 	upstreamCode int,
 	upstreamResponse string,
 	upstreamMessage string,
@@ -17,4 +17,5 @@ func ErrAlipayRespCodeInvalid(
 	)
 }
 
+var ErrAlipayRespCodeInvalid = model.New("alipay resp code invalid")
 var ErrAlipayNotifyVerifyFailed = model.New("alipay notify verify failed")

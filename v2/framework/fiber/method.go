@@ -32,7 +32,7 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, ti
 		// Check return status
 		if wxRsp.Code != 0 && wxRsp.Code != 404 {
 			return model.TradeStateUnknown, model.TradeMethodUnknown,
-				time.Time{}, wechat.ErrWeChatPayRespCodeInvalid(
+				time.Time{}, wechat.ErrWeChatPayRespCodeInvalidBuilder(
 					wxRsp.Code, wxRsp.ErrResponse.Code, wxRsp.ErrResponse.Message,
 				)
 		}
@@ -60,7 +60,7 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, ti
 		// Check return status
 		if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
 			return model.TradeStateUnknown, model.TradeMethodUnknown,
-				time.Time{}, alipay.ErrAlipayRespCodeInvalid(
+				time.Time{}, alipay.ErrAlipayRespCodeInvalidBuilder(
 					aliRsp.StatusCode, aliRsp.ErrResponse.Code, aliRsp.ErrResponse.Message,
 				)
 		}
@@ -88,7 +88,7 @@ func (c *Client) Close(orderID string) error {
 
 		// Check return status
 		if wxRsp.Code != 0 && wxRsp.Code != 404 {
-			return wechat.ErrWeChatPayRespCodeInvalid(
+			return wechat.ErrWeChatPayRespCodeInvalidBuilder(
 				wxRsp.Code, wxRsp.ErrResponse.Code, wxRsp.ErrResponse.Message,
 			)
 		}
@@ -108,7 +108,7 @@ func (c *Client) Close(orderID string) error {
 
 		// Check return status
 		if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
-			return alipay.ErrAlipayRespCodeInvalid(
+			return alipay.ErrAlipayRespCodeInvalidBuilder(
 				aliRsp.StatusCode, aliRsp.ErrResponse.Code, aliRsp.ErrResponse.Message,
 			)
 		}
@@ -154,7 +154,7 @@ func (c *Client) Refund(
 
 			// Check return status
 			if aliRsp.StatusCode != http.StatusOK && aliRsp.ErrResponse.Code != "ACQ.TRADE_NOT_EXIST" {
-				return alipay.ErrAlipayRespCodeInvalid(
+				return alipay.ErrAlipayRespCodeInvalidBuilder(
 					aliRsp.StatusCode, aliRsp.ErrResponse.Code, aliRsp.ErrResponse.Message,
 				)
 			}
@@ -190,7 +190,7 @@ func (c *Client) Refund(
 
 			// Check return status
 			if wxRsp.Code != 0 && wxRsp.Code != 404 {
-				return wechat.ErrWeChatPayRespCodeInvalid(
+				return wechat.ErrWeChatPayRespCodeInvalidBuilder(
 					wxRsp.Code, wxRsp.ErrResponse.Code, wxRsp.ErrResponse.Message,
 				)
 			}

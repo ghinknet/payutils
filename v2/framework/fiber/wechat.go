@@ -67,7 +67,7 @@ func (w *WeChatPay) Create(c fiber.Ctx) error {
 			return w.Client.Config.ErrorHandler(c, err)
 		}
 		if wxRsp.Code != 0 {
-			return w.Client.Config.ErrorHandler(c, internalWeChat.ErrWeChatPayRespCodeInvalid(
+			return w.Client.Config.ErrorHandler(c, internalWeChat.ErrWeChatPayRespCodeInvalidBuilder(
 				wxRsp.Code, wxRsp.ErrResponse.Code, wxRsp.ErrResponse.Message,
 			))
 		}
@@ -91,7 +91,7 @@ func (w *WeChatPay) Create(c fiber.Ctx) error {
 			return w.Client.Config.ErrorHandler(c, err)
 		}
 		if wxRsp.Code != 0 {
-			return w.Client.Config.ErrorHandler(c, internalWeChat.ErrWeChatPayRespCodeInvalid(
+			return w.Client.Config.ErrorHandler(c, internalWeChat.ErrWeChatPayRespCodeInvalidBuilder(
 				wxRsp.Code, wxRsp.ErrResponse.Code, wxRsp.ErrResponse.Message,
 			))
 		}
