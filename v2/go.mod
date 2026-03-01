@@ -5,7 +5,7 @@ go 1.25.3
 require (
 	github.com/ghinknet/json v1.1.1
 	github.com/go-pay/gopay v1.5.115
-	github.com/gofiber/fiber/v3 v3.0.0
+	github.com/gofiber/fiber/v3 v3.1.0
 )
 
 require (
@@ -35,7 +35,7 @@ require (
 	github.com/valyala/fasthttp v1.69.0 // indirect
 	golang.org/x/arch v0.24.0 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
-	golang.org/x/net v0.50.0 // indirect
+	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
 )
