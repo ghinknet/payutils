@@ -1,6 +1,6 @@
 package model
 
-// PayutilsError provides a customized error type includes detail error for payutils
+// PayutilsError provides a customised error type includes detail error for payutils
 type PayutilsError struct {
 	message          string
 	upstreamCode     int

@@ -2,7 +2,6 @@ package fiber
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -21,8 +20,9 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, ti
 	if c.Payment.WeChat != nil {
 		// Check WeChat-Pay
 		wxRsp, err := c.Payment.WeChat.V3TransactionQueryOrder(
-			context.Background(), 2, fmt.Sprintf(
-				"%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix,
+			context.Background(), 2, strings.Join([]string{
+				c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix,
+			}, "",
 			),
 		)
 		if err != nil {
@@ -48,7 +48,7 @@ func (c *Client) Status(orderID string) (model.TradeState, model.TradeMethod, ti
 	if c.Payment.Alipay != nil {
 		// Prepare params
 		bm := make(gopay.BodyMap)
-		bm.Set("out_trade_no", fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix)).
+		bm.Set("out_trade_no", strings.Join([]string{c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix}, "")).
 			Set("query_options", []string{"send_pay_date"})
 
 		// Check Alipay
@@ -80,7 +80,7 @@ func (c *Client) Close(orderID string) error {
 	if c.Payment.WeChat != nil {
 		// Close order in WeChat-Pay
 		wxRsp, err := c.Payment.WeChat.V3TransactionCloseOrder(
-			context.Background(), fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix),
+			context.Background(), strings.Join([]string{c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix}, ""),
 		)
 		if err != nil {
 			return err
@@ -98,7 +98,7 @@ func (c *Client) Close(orderID string) error {
 	if c.Payment.Alipay != nil {
 		// Prepare params
 		bm := make(gopay.BodyMap)
-		bm.Set("out_trade_no", fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix))
+		bm.Set("out_trade_no", strings.Join([]string{c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix}, ""))
 
 		// Close order in Alipay
 		aliRsp, err := c.Payment.Alipay.TradeClose(context.Background(), bm)
@@ -134,11 +134,11 @@ func (c *Client) Refund(
 			// Prepare params
 			bm := make(gopay.BodyMap)
 			bm.Set("out_trade_no",
-				fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix),
+				strings.Join([]string{c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix}, ""),
 			)
 			bm.Set("refund_amount", utils.CentsToYuan(refundAmount))
 			bm.Set("out_request_no",
-				fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, refundID, c.Config.Basic.Suffix),
+				strings.Join([]string{c.Config.Basic.Prefix, refundID, c.Config.Basic.Suffix}, ""),
 			)
 
 			// Set reason
@@ -167,14 +167,15 @@ func (c *Client) Refund(
 			// Prepare params
 			bm := make(gopay.BodyMap)
 			bm.Set("out_trade_no",
-				fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix),
+				strings.Join([]string{c.Config.Basic.Prefix, orderID, c.Config.Basic.Suffix}, ""),
 			).
 				Set("out_refund_no",
-					fmt.Sprintf("%s%s%s", c.Config.Basic.Prefix, refundID, c.Config.Basic.Suffix),
+					strings.Join([]string{c.Config.Basic.Prefix, refundID, c.Config.Basic.Suffix}, ""),
 				).
 				Set("reason", reason).
-				Set("notify_url", fmt.Sprintf(
-					"%s%s/wechat/callback", c.Config.Basic.Endpoint, c.Config.Fiber.(*fiber.Group).Prefix,
+				Set("notify_url", strings.Join([]string{
+					c.Config.Basic.Endpoint, c.Config.Fiber.(*fiber.Group).Prefix, "/wechat/callback",
+				}, "",
 				)).
 				SetBodyMap("amount", func(bm gopay.BodyMap) {
 					bm.Set("total", totalAmount).

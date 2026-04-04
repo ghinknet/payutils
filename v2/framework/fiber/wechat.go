@@ -2,7 +2,6 @@ package fiber
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -49,10 +48,11 @@ func (w *WeChatPay) Create(c fiber.Ctx) error {
 	bm.Set("appid", w.Client.Config.WeChatPay.AppID).
 		Set("mchid", w.Client.Config.WeChatPay.MerchantID).
 		Set("description", orderInfo.Subject).
-		Set("out_trade_no", fmt.Sprintf("%s%s%s", w.Client.Config.Basic.Prefix, req.OrderID, w.Client.Config.Basic.Suffix)).
+		Set("out_trade_no", strings.Join([]string{w.Client.Config.Basic.Prefix, req.OrderID, w.Client.Config.Basic.Suffix}, "")).
 		Set("time_expire", expire).
-		Set("notify_url", fmt.Sprintf(
-			"%s%s/wechat/callback", w.Client.Config.Basic.Endpoint, w.Client.Config.Fiber.(*fiber.Group).Prefix,
+		Set("notify_url", strings.Join([]string{
+			w.Client.Config.Basic.Endpoint, w.Client.Config.Fiber.(*fiber.Group).Prefix, "/wechat/callback",
+		}, "",
 		)).
 		SetBodyMap("amount", func(bm gopay.BodyMap) {
 			bm.Set("total", orderInfo.Price).
@@ -159,11 +159,15 @@ func (w *WeChatPay) OpenIDCallback(c fiber.Ctx) error {
 	}
 
 	// Request URI
-	URL := fmt.Sprintf(
-		"https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code",
+	URL := strings.Join([]string{
+		"https://api.weixin.qq.com/sns/oauth2/access_token?appid=",
 		w.Client.Config.WeChatPay.AppID,
+		"&secret=",
 		w.Client.Config.WeChatPay.AppSecret,
+		"&code=",
 		req.Code,
+		"&grant_type=authorization_code",
+	}, "",
 	)
 
 	// Send Request
@@ -214,11 +218,15 @@ func (w *WeChatPay) AuthorizeLinkGen(c fiber.Ctx) error {
 	// Encode redirect_uri
 	req.RedirectURI = url.QueryEscape(req.RedirectURI)
 
-	authURL := fmt.Sprintf(
-		"https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect",
+	authURL := strings.Join([]string{
+		"https://open.weixin.qq.com/connect/oauth2/authorize?appid=",
 		w.Client.Config.WeChatPay.AppID,
+		"&redirect_uri=",
 		req.RedirectURI,
+		"&response_type=code&scope=snsapi_base&state=",
 		req.State,
+		"#wechat_redirect",
+	}, "",
 	)
 
 	// Return authorize link

@@ -146,7 +146,7 @@ type OpenIDCallbackRequest struct {
 	State string `json:"state" binding:"required"`
 }
 
-// AuthorizeLinkRequest provides basic WeChat OpenID authorize link request params bind
+// AuthorizeLinkRequest provides basic WeChat OpenID authorise link request params bind
 type AuthorizeLinkRequest struct {
 	RedirectURI string `json:"redirect_uri" binding:"required"`
 	State       string `json:"state" binding:"required"`
