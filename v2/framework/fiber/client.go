@@ -1,7 +1,8 @@
 package fiber
 
 import (
-	"github.com/ghinknet/json"
+	"encoding/json"
+
 	"github.com/ghinknet/payutils/v2/model"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay/v3"
