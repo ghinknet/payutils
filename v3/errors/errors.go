@@ -2,13 +2,24 @@ package errors
 
 type PayutilsError struct {
 	message          string
+	upstreamName     string
 	upstreamCode     string
 	upstreamMessage  string
 	upstreamResponse any
+	frameworkName    string
 }
 
 func (e *PayutilsError) Error() string {
 	return e.message
+}
+
+func (e *PayutilsError) WithUpstreamName(upstreamName string) *PayutilsError {
+	e.upstreamName = upstreamName
+	return e
+}
+
+func (e *PayutilsError) UpstreamName() string {
+	return e.upstreamName
 }
 
 func (e *PayutilsError) WithUpstreamCode(code string) *PayutilsError {
@@ -38,7 +49,22 @@ func (e *PayutilsError) UpstreamResponse() any {
 	return e.upstreamResponse
 }
 
+func (e *PayutilsError) WithFrameworkName(frameworkName string) *PayutilsError {
+	e.frameworkName = frameworkName
+	return e
+}
+
+func (e *PayutilsError) FrameworkName() string {
+	return e.frameworkName
+}
+
 type Option func(*PayutilsError)
+
+func WithUpstreamName(upstreamName string) Option {
+	return func(e *PayutilsError) {
+		e.upstreamName = upstreamName
+	}
+}
 
 func WithUpstreamCode(code string) Option {
 	return func(e *PayutilsError) {
@@ -55,6 +81,12 @@ func WithUpstreamMessage(message string) Option {
 func WithUpstreamResponse(response any) Option {
 	return func(e *PayutilsError) {
 		e.upstreamResponse = response
+	}
+}
+
+func WithFrameworkName(frameworkName string) Option {
+	return func(e *PayutilsError) {
+		e.frameworkName = frameworkName
 	}
 }
 
@@ -80,3 +112,5 @@ var ErrPaymentMethodDisabled = New("payment method is disabled")
 var ErrNoEnoughTimeToPay = New("no enough time to pay")
 var ErrUnsupportedCurrency = New("unsupported currency")
 var ErrUnsupportedMethod = New("unsupported method")
+
+var ErrDriverNotRegistered = New("driver not registered")
