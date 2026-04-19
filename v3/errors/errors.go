@@ -1,5 +1,7 @@
 package errors
 
+import "github.com/ghinknet/toolbox/pointer"
+
 type PayutilsError struct {
 	message          string
 	upstreamName     string
@@ -7,15 +9,26 @@ type PayutilsError struct {
 	upstreamMessage  string
 	upstreamResponse any
 	frameworkName    string
+
+	raw error
 }
 
 func (e *PayutilsError) Error() string {
 	return e.message
 }
 
+func (e *PayutilsError) Is(err error) bool {
+	return e.raw == err
+}
+
+func (e *PayutilsError) Unwrap() error {
+	return e.raw
+}
+
 func (e *PayutilsError) WithUpstreamName(upstreamName string) *PayutilsError {
-	e.upstreamName = upstreamName
-	return e
+	ne := pointer.Copy(e)
+	ne.upstreamName = upstreamName
+	return ne
 }
 
 func (e *PayutilsError) UpstreamName() string {
@@ -23,8 +36,9 @@ func (e *PayutilsError) UpstreamName() string {
 }
 
 func (e *PayutilsError) WithUpstreamCode(code string) *PayutilsError {
-	e.upstreamCode = code
-	return e
+	ne := pointer.Copy(e)
+	ne.upstreamCode = code
+	return ne
 }
 
 func (e *PayutilsError) UpstreamCode() string {
@@ -32,8 +46,9 @@ func (e *PayutilsError) UpstreamCode() string {
 }
 
 func (e *PayutilsError) WithUpstreamMessage(message string) *PayutilsError {
-	e.upstreamMessage = message
-	return e
+	ne := pointer.Copy(e)
+	ne.upstreamMessage = message
+	return ne
 }
 
 func (e *PayutilsError) UpstreamMessage() string {
@@ -41,8 +56,9 @@ func (e *PayutilsError) UpstreamMessage() string {
 }
 
 func (e *PayutilsError) WithUpstreamResponse(response any) *PayutilsError {
-	e.upstreamResponse = response
-	return e
+	ne := pointer.Copy(e)
+	ne.upstreamResponse = response
+	return ne
 }
 
 func (e *PayutilsError) UpstreamResponse() any {
@@ -50,8 +66,9 @@ func (e *PayutilsError) UpstreamResponse() any {
 }
 
 func (e *PayutilsError) WithFrameworkName(frameworkName string) *PayutilsError {
-	e.frameworkName = frameworkName
-	return e
+	ne := pointer.Copy(e)
+	ne.frameworkName = frameworkName
+	return ne
 }
 
 func (e *PayutilsError) FrameworkName() string {
@@ -97,6 +114,8 @@ func New(c string, options ...Option) *PayutilsError {
 		option(err)
 	}
 
+	err.raw = err
+
 	return err
 }
 
@@ -104,14 +123,14 @@ func New(c string, options ...Option) *PayutilsError {
 
 var ErrMissAllowedOrigin = New("miss allowed origin")
 var ErrMissEndpoint = New("miss endpoint")
-var ErrMissHandler = New("miss handler")
+var ErrMissInstance = New("miss instance")
 
 // Public payment
 
-var ErrPaymentMethodDisabled = New("payment method is disabled")
 var ErrNoEnoughTimeToPay = New("no enough time to pay")
 var ErrUnsupportedCurrency = New("unsupported currency")
 var ErrUnsupportedMethod = New("unsupported method")
 
 var ErrDriverNotRegistered = New("driver not registered")
 var ErrUnsupportedInstance = New("unsupported instance")
+var ErrUpstreamNotFound = New("upstream not found")

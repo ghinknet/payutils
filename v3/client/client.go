@@ -4,18 +4,39 @@ import (
 	"encoding/json"
 
 	"github.com/ghinknet/payutils/v3/errors"
+	"github.com/ghinknet/payutils/v3/internal/action"
 	"github.com/ghinknet/payutils/v3/internal/state"
 	"github.com/ghinknet/payutils/v3/model"
 	"github.com/ghinknet/payutils/v3/router"
 )
 
-func NewClient(config model.Config) (client *model.Client, err error) {
+type Client struct {
+	PayClient map[string]model.PayClient
+	Config    model.Config
+}
+
+func NewClient(config model.Config) (client *Client, err error) {
 	// Prepare JSON
 	if config.Marshal == nil {
 		config.Marshal = json.Marshal
 	}
 	if config.Unmarshal == nil {
 		config.Unmarshal = json.Unmarshal
+	}
+
+	// Check AllowOrigins
+	if config.AllowOrigins == nil {
+		return nil, errors.ErrMissAllowedOrigin
+	}
+
+	// Check endpoint
+	if config.Endpoint == "" {
+		return nil, errors.ErrMissEndpoint
+	}
+
+	// Check handler
+	if len(config.Instances) == 0 {
+		return nil, errors.ErrMissInstance
 	}
 
 	// Register pay clients
@@ -31,6 +52,9 @@ func NewClient(config model.Config) (client *model.Client, err error) {
 		// Create driver client
 		payClients[upstreamName], err = upstream.NewClient(model.PayDriverClientParam{
 			Credential: upstreamCredential,
+			// Contract
+			StatusUpdater: action.StatusUpdaterConstructor(config),
+			ErrorHandler:  config.ErrorHandler,
 			// JSON
 			Marshal:   config.Marshal,
 			Unmarshal: config.Unmarshal,
@@ -61,7 +85,8 @@ func NewClient(config model.Config) (client *model.Client, err error) {
 		}
 	}
 
-	return &model.Client{
+	return &Client{
 		PayClient: payClients,
+		Config:    config,
 	}, nil
 }

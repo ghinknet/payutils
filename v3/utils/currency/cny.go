@@ -1,6 +1,8 @@
-package utils
+package currency
 
 import "fmt"
+
+const CNY = "CNY"
 
 // CentsToYuan transfer cents to yuan
 func CentsToYuan(cents int64) string {
