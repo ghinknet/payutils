@@ -5,8 +5,6 @@ import "time"
 type TradeState = string
 
 const (
-	// TradeStateNotExist trade not create for user to pay
-	TradeStateNotExist TradeState = "NOT_EXIST"
 	// TradeStatePending trade waiting for user to pay
 	TradeStatePending TradeState = "PENDING"
 	// TradeStateSuccess trade finished successfully

@@ -131,6 +131,7 @@ var ErrUpstreamNotFound = New("upstream not found")
 
 // Public
 
+var ErrTradeNotExist = New("trade not exist")
 var ErrNoEnoughTimeToPay = New("no enough time to pay")
 var ErrUnsupportedCurrency = New("unsupported currency")
 var ErrUnsupportedInstance = New("unsupported instance")
