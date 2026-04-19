@@ -114,3 +114,4 @@ var ErrUnsupportedCurrency = New("unsupported currency")
 var ErrUnsupportedMethod = New("unsupported method")
 
 var ErrDriverNotRegistered = New("driver not registered")
+var ErrUnsupportedInstance = New("unsupported instance")
