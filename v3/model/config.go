@@ -9,12 +9,11 @@ import (
 type Config struct {
 	// Payutils
 	Debug               bool
-	AllowOrigins        []string
 	Endpoint            string
 	TradeIDPrefix       string
 	TradeIDSuffix       string
-	NoNewPaymentWindows time.Duration
-	SafetyMargin        time.Duration
+	NoNewPaymentWindows *time.Duration
+	SafetyMargin        *time.Duration
 	// Http
 	Instances map[string]any
 	// Pay

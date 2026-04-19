@@ -11,8 +11,16 @@ type PayDriver interface {
 }
 
 type PayDriverClientParam struct {
+	// Debug
+	Debug bool
 	// Pay client credential
 	Credential map[string]string
+	// Other customised settings
+	Endpoint            string
+	TradeIDPrefix       string
+	TradeIDSuffix       string
+	NoNewPaymentWindows time.Duration
+	SafetyMargin        time.Duration
 	// Contract
 	StatusUpdater func(
 		ctx context.Context, r *http.Request, upstream string, tradeID string, status TradeState, time time.Time,

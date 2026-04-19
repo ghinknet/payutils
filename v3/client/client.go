@@ -8,6 +8,8 @@ import (
 	"github.com/ghinknet/payutils/v3/internal/state"
 	"github.com/ghinknet/payutils/v3/model"
 	"github.com/ghinknet/payutils/v3/router"
+	"github.com/ghinknet/toolbox/expr"
+	"github.com/ghinknet/toolbox/pointer"
 )
 
 type Client struct {
@@ -22,11 +24,6 @@ func NewClient(config model.Config) (client *Client, err error) {
 	}
 	if config.Unmarshal == nil {
 		config.Unmarshal = json.Unmarshal
-	}
-
-	// Check AllowOrigins
-	if config.AllowOrigins == nil {
-		return nil, errors.ErrMissAllowedOrigin
 	}
 
 	// Check endpoint
@@ -50,15 +47,34 @@ func NewClient(config model.Config) (client *Client, err error) {
 		}
 
 		// Create driver client
-		payClients[upstreamName], err = upstream.NewClient(model.PayDriverClientParam{
-			Credential: upstreamCredential,
-			// Contract
-			StatusUpdater: action.StatusUpdaterConstructor(config),
-			ErrorHandler:  config.ErrorHandler,
-			// JSON
-			Marshal:   config.Marshal,
-			Unmarshal: config.Unmarshal,
-		})
+		payClients[upstreamName], err = upstream.NewClient(
+			model.PayDriverClientParam{
+				// Debug
+				Debug: config.Debug,
+				// Pay client credential
+				Credential: upstreamCredential,
+				// Other customised settings
+				Endpoint:      config.Endpoint,
+				TradeIDPrefix: config.TradeIDPrefix,
+				TradeIDSuffix: config.TradeIDSuffix,
+				NoNewPaymentWindows: expr.Ternary(
+					config.NoNewPaymentWindows != nil,
+					pointer.SafeDeref(config.NoNewPaymentWindows),
+					model.NoNewPaymentWindows,
+				),
+				SafetyMargin: expr.Ternary(
+					config.SafetyMargin != nil,
+					pointer.SafeDeref(config.SafetyMargin),
+					model.SafetyMargin,
+				),
+				// Contract
+				StatusUpdater: action.StatusUpdaterConstructor(config),
+				ErrorHandler:  config.ErrorHandler,
+				// JSON
+				Marshal:   config.Marshal,
+				Unmarshal: config.Unmarshal,
+			},
+		)
 		if err != nil {
 			return nil, err
 		}

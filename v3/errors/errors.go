@@ -121,16 +121,16 @@ func New(c string, options ...Option) *PayutilsError {
 
 // Config
 
-var ErrMissAllowedOrigin = New("miss allowed origin")
 var ErrMissEndpoint = New("miss endpoint")
 var ErrMissInstance = New("miss instance")
 
-// Public payment
+// Internal
+
+var ErrDriverNotRegistered = New("driver not registered")
+var ErrUpstreamNotFound = New("upstream not found")
+
+// Public
 
 var ErrNoEnoughTimeToPay = New("no enough time to pay")
 var ErrUnsupportedCurrency = New("unsupported currency")
-var ErrUnsupportedMethod = New("unsupported method")
-
-var ErrDriverNotRegistered = New("driver not registered")
 var ErrUnsupportedInstance = New("unsupported instance")
-var ErrUpstreamNotFound = New("upstream not found")
