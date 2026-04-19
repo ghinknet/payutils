@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type TradeState string
+type TradeState = string
 
 const (
 	// TradeStatePending waiting for user to pay
