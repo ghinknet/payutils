@@ -3,8 +3,8 @@ package fiber
 import (
 	"net/http"
 
-	"github.com/ghinknet/payutils/v2/model"
 	"github.com/gofiber/fiber/v3"
+	"go.gh.ink/payutils/v2/model"
 )
 
 func Resp(c fiber.Ctx, code int, data any, msg string) error {

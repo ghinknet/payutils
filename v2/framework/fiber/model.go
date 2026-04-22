@@ -3,10 +3,10 @@ package fiber
 import (
 	"time"
 
-	"github.com/ghinknet/payutils/v2/model"
-	"github.com/ghinknet/payutils/v2/payment/alipay"
-	"github.com/ghinknet/payutils/v2/payment/wechat"
 	"github.com/gofiber/fiber/v3"
+	"go.gh.ink/payutils/v2/model"
+	"go.gh.ink/payutils/v2/payment/alipay"
+	"go.gh.ink/payutils/v2/payment/wechat"
 )
 
 // Config provides specific config options for framework

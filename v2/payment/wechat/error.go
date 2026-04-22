@@ -1,7 +1,7 @@
 package wechat
 
 import (
-	"github.com/ghinknet/payutils/v2/model"
+	"go.gh.ink/payutils/v2/model"
 )
 
 func ErrWeChatPayRespCodeInvalidBuilder(

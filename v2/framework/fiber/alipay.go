@@ -6,13 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ghinknet/payutils/v2/model"
-	internalAlipay "github.com/ghinknet/payutils/v2/payment/alipay"
-	"github.com/ghinknet/payutils/v2/utils"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
+	"go.gh.ink/payutils/v2/model"
+	internalAlipay "go.gh.ink/payutils/v2/payment/alipay"
+	"go.gh.ink/payutils/v2/utils"
 )
 
 type Alipay struct {

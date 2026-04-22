@@ -3,10 +3,10 @@ package fiber
 import (
 	"encoding/json"
 
-	"github.com/ghinknet/payutils/v2/model"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay/v3"
 	"github.com/go-pay/gopay/wechat/v3"
+	"go.gh.ink/payutils/v2/model"
 )
 
 // CreateClient creates a unified client and register route

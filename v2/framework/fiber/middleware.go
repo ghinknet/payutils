@@ -1,8 +1,8 @@
 package fiber
 
 import (
-	"github.com/ghinknet/payutils/v2/model"
 	"github.com/gofiber/fiber/v3"
+	"go.gh.ink/payutils/v2/model"
 )
 
 // CheckPaymentActivate provides a middleware to check a payment method activate status

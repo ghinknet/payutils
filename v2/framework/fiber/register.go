@@ -1,9 +1,9 @@
 package fiber
 
 import (
-	"github.com/ghinknet/payutils/v2/model"
 	"github.com/gofiber/fiber/v3"
 	recoverer "github.com/gofiber/fiber/v3/middleware/recover"
+	"go.gh.ink/payutils/v2/model"
 )
 
 // register the framework route

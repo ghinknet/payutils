@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ghinknet/payutils/v2/model"
-	internalWeChat "github.com/ghinknet/payutils/v2/payment/wechat"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/wechat/v3"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
+	"go.gh.ink/payutils/v2/model"
+	internalWeChat "go.gh.ink/payutils/v2/payment/wechat"
 )
 
 type WeChatPay struct {

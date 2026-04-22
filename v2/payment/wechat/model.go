@@ -3,7 +3,7 @@ package wechat
 import (
 	"time"
 
-	"github.com/ghinknet/payutils/v2/model"
+	"go.gh.ink/payutils/v2/model"
 )
 
 // Config provides needed config options for WeChat Pay

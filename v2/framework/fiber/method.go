@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ghinknet/payutils/v2/model"
-	"github.com/ghinknet/payutils/v2/payment/alipay"
-	"github.com/ghinknet/payutils/v2/payment/wechat"
-	"github.com/ghinknet/payutils/v2/utils"
 	"github.com/go-pay/gopay"
 	"github.com/gofiber/fiber/v3"
+	"go.gh.ink/payutils/v2/model"
+	"go.gh.ink/payutils/v2/payment/alipay"
+	"go.gh.ink/payutils/v2/payment/wechat"
+	"go.gh.ink/payutils/v2/utils"
 )
 
 // Status returns the status of the order

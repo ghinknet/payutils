@@ -1,7 +1,7 @@
 package alipay
 
 import (
-	"github.com/ghinknet/payutils/v2/model"
+	"go.gh.ink/payutils/v2/model"
 )
 
 func ErrAlipayRespCodeInvalidBuilder(
