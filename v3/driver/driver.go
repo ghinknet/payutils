@@ -1,8 +1,8 @@
 package driver
 
 import (
-	"github.com/ghinknet/payutils/v3/internal/state"
-	"github.com/ghinknet/payutils/v3/model"
+	"go.gh.ink/payutils/v3/internal/state"
+	"go.gh.ink/payutils/v3/model"
 )
 
 func RegisterPay(name string, driver model.PayDriver) {

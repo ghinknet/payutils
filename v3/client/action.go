@@ -1,8 +1,8 @@
 package client
 
 import (
-	"github.com/ghinknet/payutils/v3/errors"
-	"github.com/ghinknet/payutils/v3/model"
+	"go.gh.ink/payutils/v3/errors"
+	"go.gh.ink/payutils/v3/model"
 )
 
 func (c *Client) Status(upstreams []string, tradeID string) (map[string]model.ReturnStatus, error) {

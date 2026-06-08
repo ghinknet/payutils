@@ -1,6 +1,6 @@
 package errors
 
-import "github.com/ghinknet/toolbox/pointer"
+import "go.gh.ink/toolbox/pointer"
 
 type PayutilsError struct {
 	message          string
@@ -21,8 +21,15 @@ func (e *PayutilsError) Is(err error) bool {
 	return e.raw == err
 }
 
+// Unwrap reports no wrapped error.
+//
+// The raw field is only a matching anchor used by Is so that derived errors
+// (produced by the With* copies) still match their origin sentinel. It is not
+// a wrapped inner error, and in particular a sentinel's raw points at itself;
+// returning it here would make errors.Is loop forever. Returning nil ends the
+// unwrap chain while Is still provides sentinel matching.
 func (e *PayutilsError) Unwrap() error {
-	return e.raw
+	return nil
 }
 
 func (e *PayutilsError) WithUpstreamName(upstreamName string) *PayutilsError {
@@ -128,10 +135,12 @@ var ErrMissInstance = New("miss instance")
 
 var ErrDriverNotRegistered = New("driver not registered")
 var ErrUpstreamNotFound = New("upstream not found")
+var ErrNoDriverClaimed = New("no driver claimed the create param")
 
 // Public
 
 var ErrTradeNotExist = New("trade not exist")
 var ErrNoEnoughTimeToPay = New("no enough time to pay")
 var ErrUnsupportedCurrency = New("unsupported currency")
+var ErrUnsupportedPlatform = New("unsupported platform")
 var ErrUnsupportedInstance = New("unsupported instance")

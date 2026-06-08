@@ -3,13 +3,13 @@ package client
 import (
 	"encoding/json"
 
-	"github.com/ghinknet/payutils/v3/errors"
-	"github.com/ghinknet/payutils/v3/internal/action"
-	"github.com/ghinknet/payutils/v3/internal/state"
-	"github.com/ghinknet/payutils/v3/model"
-	"github.com/ghinknet/payutils/v3/router"
-	"github.com/ghinknet/toolbox/expr"
-	"github.com/ghinknet/toolbox/pointer"
+	"go.gh.ink/payutils/v3/errors"
+	"go.gh.ink/payutils/v3/internal/action"
+	"go.gh.ink/payutils/v3/internal/state"
+	"go.gh.ink/payutils/v3/model"
+	"go.gh.ink/payutils/v3/router"
+	"go.gh.ink/toolbox/expr"
+	"go.gh.ink/toolbox/pointer"
 )
 
 type Client struct {
@@ -29,11 +29,6 @@ func NewClient(config model.Config) (client *Client, err error) {
 	// Check endpoint
 	if config.Endpoint == "" {
 		return nil, errors.ErrMissEndpoint
-	}
-
-	// Check handler
-	if len(config.Instances) == 0 {
-		return nil, errors.ErrMissInstance
 	}
 
 	// Register pay clients
@@ -80,7 +75,11 @@ func NewClient(config model.Config) (client *Client, err error) {
 		}
 	}
 
-	// Register http routers
+	// Register http routers.
+	//
+	// Instances are optional: a user may either import an http driver and let
+	// payutils register the callback route automatically, or omit Instances and
+	// invoke (*Client).Callback manually with a standard *http.Request.
 	for instanceName, instance := range config.Instances {
 		// Check driver registered
 		framework, ok := state.HttpDrivers[instanceName]
@@ -95,8 +94,8 @@ func NewClient(config model.Config) (client *Client, err error) {
 				return nil, err
 			}
 
-			// Register router
-			unifiedInstance.Post(router.Route(upstreamName, "create"), payClient.Create)
+			// Register callback router only. Create is no longer a route; it is
+			// exposed as (*Client).Create for the user to call directly.
 			unifiedInstance.Post(router.Route(upstreamName, "callback"), payClient.Callback)
 		}
 	}
