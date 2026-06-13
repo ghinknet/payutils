@@ -58,11 +58,11 @@ import (
     "go.gh.ink/payutils/v3/model"
 
     // Pay drivers self-register via init().
-    payAlipay "go.gh.ink/payutils-pay-alipay/v3"
-    _ "go.gh.ink/payutils-pay-wechat/v3"
+    payAlipay "go.gh.ink/payutils/pay/alipay/v3"
+    _ "go.gh.ink/payutils/pay/wechat/v3"
 
     // Optional: an HTTP driver self-registers via init().
-    httpFiber "go.gh.ink/payutils-http-fiber/v3"
+    httpFiber "go.gh.ink/payutils/http/fiber/v3"
 )
 ```
 
